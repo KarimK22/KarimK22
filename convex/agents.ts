@@ -95,9 +95,10 @@ export const getActivityFeed = query({
   },
   handler: async (ctx, args) => {
     if (args.agent) {
+      const agent = args.agent; // Narrow the type
       return await ctx.db
         .query("activityLog")
-        .withIndex("by_agent", (q) => q.eq("agent", args.agent))
+        .withIndex("by_agent", (q) => q.eq("agent", agent))
         .order("desc")
         .take(args.limit ?? 50);
     }
