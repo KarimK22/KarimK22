@@ -94,14 +94,17 @@ export const getActivityFeed = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    let q = ctx.db.query("activityLog").order("desc");
-    
     if (args.agent) {
-      q = ctx.db.query("activityLog")
+      return await ctx.db
+        .query("activityLog")
         .withIndex("by_agent", (q) => q.eq("agent", args.agent))
-        .order("desc");
+        .order("desc")
+        .take(args.limit ?? 50);
     }
     
-    return await q.take(args.limit ?? 50);
+    return await ctx.db
+      .query("activityLog")
+      .order("desc")
+      .take(args.limit ?? 50);
   },
 });
