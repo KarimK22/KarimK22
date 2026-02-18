@@ -5,7 +5,7 @@ import { api } from "../../convex/_generated/api";
 
 export default function CalendarPage() {
   const upcomingTasks = useQuery(api.calendar.getUpcoming, { daysAhead: 30 });
-  const allTasks = useQuery(api.calendar.getAll);
+  const allTasks = useQuery(api.calendar.getAll, {});
 
   // Group by date
   const tasksByDate = upcomingTasks?.reduce((acc, task) => {
