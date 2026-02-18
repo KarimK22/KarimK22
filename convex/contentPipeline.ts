@@ -6,9 +6,10 @@ export const getByStage = query({
   args: { stage: v.optional(v.string()) },
   handler: async (ctx, args) => {
     if (args.stage) {
+      const stage = args.stage;
       return await ctx.db
         .query("contentPipeline")
-        .withIndex("by_stage", (q) => q.eq("stage", args.stage))
+        .withIndex("by_stage", (q) => q.eq("stage", stage))
         .collect();
     }
     return await ctx.db.query("contentPipeline").collect();

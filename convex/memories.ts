@@ -32,19 +32,23 @@ export const getRecent = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    let q = ctx.db.query("memories").order("desc");
-    
     if (args.agent) {
-      q = ctx.db.query("memories")
-        .withIndex("by_agent", (q) => q.eq("agent", args.agent))
-        .order("desc");
+      const agent = args.agent;
+      return await ctx.db.query("memories")
+        .withIndex("by_agent", (q) => q.eq("agent", agent))
+        .order("desc")
+        .take(args.limit ?? 100);
     } else if (args.type) {
-      q = ctx.db.query("memories")
-        .withIndex("by_type", (q) => q.eq("type", args.type))
-        .order("desc");
+      const type = args.type;
+      return await ctx.db.query("memories")
+        .withIndex("by_type", (q) => q.eq("type", type))
+        .order("desc")
+        .take(args.limit ?? 100);
     }
     
-    return await q.take(args.limit ?? 100);
+    return await ctx.db.query("memories")
+      .order("desc")
+      .take(args.limit ?? 100);
   },
 });
 

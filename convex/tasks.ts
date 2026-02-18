@@ -6,9 +6,10 @@ export const getByStatus = query({
   args: { status: v.optional(v.string()) },
   handler: async (ctx, args) => {
     if (args.status) {
+      const status = args.status;
       return await ctx.db
         .query("tasks")
-        .withIndex("by_status", (q) => q.eq("status", args.status))
+        .withIndex("by_status", (q) => q.eq("status", status))
         .collect();
     }
     return await ctx.db.query("tasks").collect();
@@ -19,9 +20,10 @@ export const getByStatus = query({
 export const getByAssignee = query({
   args: { assignee: v.string() },
   handler: async (ctx, args) => {
+    const assignee = args.assignee;
     return await ctx.db
       .query("tasks")
-      .withIndex("by_assignee", (q) => q.eq("assignee", args.assignee))
+      .withIndex("by_assignee", (q) => q.eq("assignee", assignee))
       .collect();
   },
 });

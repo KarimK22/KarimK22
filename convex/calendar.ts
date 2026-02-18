@@ -34,9 +34,10 @@ export const getAll = query({
   },
   handler: async (ctx, args) => {
     if (args.status) {
+      const status = args.status;
       return await ctx.db
         .query("scheduledTasks")
-        .withIndex("by_status", (q) => q.eq("status", args.status))
+        .withIndex("by_status", (q) => q.eq("status", status))
         .collect();
     }
     return await ctx.db.query("scheduledTasks").collect();
