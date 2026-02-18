@@ -4,9 +4,9 @@ import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 
 export default function Dashboard() {
-  const agents = useQuery(api.agents.getAll);
-  const taskStats = useQuery(api.tasks.getStats);
-  const contentStats = useQuery(api.contentPipeline.getStats);
+  const agents = useQuery(api.agents.getAll, {});
+  const taskStats = useQuery(api.tasks.getStats, {});
+  const contentStats = useQuery(api.contentPipeline.getStats, {});
   const upcomingTasks = useQuery(api.calendar.getUpcoming, { limit: 5 });
   const recentActivity = useQuery(api.agents.getActivityFeed, { limit: 10 });
 

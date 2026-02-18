@@ -16,8 +16,8 @@ export default function TasksPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [newTask, setNewTask] = useState({ title: "", assignee: "APEX", priority: "medium" });
 
-  const tasks = useQuery(api.tasks.getByStatus);
-  const stats = useQuery(api.tasks.getStats);
+  const tasks = useQuery(api.tasks.getByStatus, {});
+  const stats = useQuery(api.tasks.getStats, {});
   const createTask = useMutation(api.tasks.create);
   const updateTask = useMutation(api.tasks.update);
 

@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
 export default function TeamPage() {
-  const agents = useQuery(api.agents.getAll);
+  const agents = useQuery(api.agents.getAll, {});
   const activityFeed = useQuery(api.agents.getActivityFeed, { limit: 20 });
 
   return (

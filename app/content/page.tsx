@@ -13,8 +13,8 @@ const STAGES = [
 ];
 
 export default function ContentPage() {
-  const content = useQuery(api.contentPipeline.getByStage);
-  const stats = useQuery(api.contentPipeline.getStats);
+  const content = useQuery(api.contentPipeline.getByStage, {});
+  const stats = useQuery(api.contentPipeline.getStats, {});
 
   const contentByStage = STAGES.map(stage => ({
     ...stage,
