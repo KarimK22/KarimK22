@@ -33,8 +33,8 @@ export default function OfficePage() {
       name: "VIBE",
       role: "Chief Creative Officer",
       avatar: "🎨",
-      status: "idle",
-      currentTask: null,
+      status: "working",
+      currentTask: "Building Isometric Office V2",
       lastActivity: Date.now(),
       skills: ["Design", "Video", "Creative Direction"]
     }
