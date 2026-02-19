@@ -13,6 +13,17 @@ const TILE_WIDTH = 64;
 const TILE_HEIGHT = 32;
 
 /**
+ * Easing functions for smooth animations
+ */
+const easeInOutSine = (t: number): number => {
+  return -(Math.cos(Math.PI * t) - 1) / 2;
+};
+
+const easeOutQuad = (t: number): number => {
+  return 1 - (1 - t) * (1 - t);
+};
+
+/**
  * Convert 2D grid coordinates to isometric screen coordinates
  */
 function gridToScreen(x: number, y: number, z: number = 0) {
@@ -170,7 +181,7 @@ class IsometricRenderer {
   }
 
   /**
-   * Draw a Roblox-style blocky character
+   * Draw a Roblox-style blocky character (ENHANCED V2)
    */
   drawCharacter(
     x: number,
@@ -186,13 +197,15 @@ class IsometricRenderer {
     const scale = options.scale || 1;
     const headBob = options.headBob || 0;
 
-    // Body proportions (scaled)
-    const headSize = 8 * scale;
-    const bodyWidth = 10 * scale;
-    const bodyHeight = 12 * scale;
-    const bodyDepth = 6 * scale;
-    const legWidth = 4 * scale;
-    const legHeight = 10 * scale;
+    // Body proportions (MORE ROBLOX-LIKE: larger head, blockier body)
+    const headSize = 10 * scale;        // Increased from 8
+    const bodyWidth = 12 * scale;       // Increased from 10
+    const bodyHeight = 14 * scale;      // Increased from 12
+    const bodyDepth = 8 * scale;        // Increased from 6
+    const legWidth = 5 * scale;         // Increased from 4
+    const legHeight = 12 * scale;       // Increased from 10
+    const armWidth = 4 * scale;         // NEW: arms
+    const armLength = 10 * scale;       // NEW: arms
 
     // Head (lighter color)
     const headColor = this.lightenColor(color, 30);
@@ -207,22 +220,37 @@ class IsometricRenderer {
       { outline: true, topColor: this.lightenColor(headColor, 15) }
     );
 
-    // Draw simple face
+    // Draw enhanced Roblox-style face
     const headPos = gridToScreen(x, y, z + bodyHeight + legHeight - headBob);
     const faceX = headPos.x + this.offsetX;
-    const faceY = headPos.y + this.offsetY + headSize / 4;
+    const faceY = headPos.y + this.offsetY + headSize / 3;
     
-    // Eyes
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    this.ctx.fillRect(faceX - 3 * scale, faceY, 2 * scale, 2 * scale);
-    this.ctx.fillRect(faceX + 1 * scale, faceY, 2 * scale, 2 * scale);
+    // Eyes (larger, more defined with white background)
+    this.ctx.save();
     
-    // Smile
-    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-    this.ctx.lineWidth = 1;
+    // Left eye white
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    this.ctx.fillRect(faceX - 4 * scale, faceY, 3 * scale, 3 * scale);
+    // Left pupil
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+    this.ctx.fillRect(faceX - 3.5 * scale, faceY + 0.5 * scale, 2 * scale, 2 * scale);
+    
+    // Right eye white
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    this.ctx.fillRect(faceX + 1 * scale, faceY, 3 * scale, 3 * scale);
+    // Right pupil
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+    this.ctx.fillRect(faceX + 1.5 * scale, faceY + 0.5 * scale, 2 * scale, 2 * scale);
+    
+    // Smile (thicker, more defined)
+    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
+    this.ctx.lineWidth = 1.5 * scale;
+    this.ctx.lineCap = 'round';
     this.ctx.beginPath();
-    this.ctx.arc(faceX, faceY + 4 * scale, 2 * scale, 0, Math.PI);
+    this.ctx.arc(faceX, faceY + 5 * scale, 3 * scale, 0.2, Math.PI - 0.2);
     this.ctx.stroke();
+    
+    this.ctx.restore();
 
     // Torso
     this.drawBox(
@@ -236,9 +264,41 @@ class IsometricRenderer {
       { outline: true }
     );
 
-    // Legs (with walking animation offset if working)
-    const leftLegOffset = options.animation === 'working' ? Math.sin(Date.now() / 500) * 2 : 0;
-    const rightLegOffset = options.animation === 'working' ? -Math.sin(Date.now() / 500) * 2 : 0;
+    // Arms (NEW - positioned at shoulders with eased animation)
+    const armColor = this.darkenColor(color, 5);
+    const rawSwing = Math.sin(Date.now() / 400);
+    const armSwing = options.animation === 'working' ? easeInOutSine((rawSwing + 1) / 2) * 6 - 3 : 0;
+    
+    // Left arm
+    this.drawBox(
+      x - (bodyWidth / 2 + armWidth / 2),
+      y,
+      z + legHeight + bodyHeight - armLength - armSwing,
+      armWidth,
+      armLength,
+      armWidth,
+      armColor,
+      { outline: true, rightColor: this.darkenColor(armColor, 20) }
+    );
+    
+    // Right arm
+    this.drawBox(
+      x + (bodyWidth / 2 + armWidth / 2),
+      y,
+      z + legHeight + bodyHeight - armLength + armSwing,
+      armWidth,
+      armLength,
+      armWidth,
+      armColor,
+      { outline: true, rightColor: this.darkenColor(armColor, 20) }
+    );
+
+    // Legs (with eased walking animation offset if working)
+    const walkCycle = (Date.now() / 500) % (Math.PI * 2);
+    const leftLegRaw = Math.sin(walkCycle);
+    const rightLegRaw = -Math.sin(walkCycle);
+    const leftLegOffset = options.animation === 'working' ? easeInOutSine((leftLegRaw + 1) / 2) * 4 - 2 : 0;
+    const rightLegOffset = options.animation === 'working' ? easeInOutSine((rightLegRaw + 1) / 2) * 4 - 2 : 0;
 
     // Left leg
     this.drawBox(
@@ -266,7 +326,7 @@ class IsometricRenderer {
   }
 
   /**
-   * Draw an isometric desk with monitor
+   * Draw an isometric desk with monitor (ENHANCED V2)
    */
   drawDesk(
     x: number,
@@ -282,7 +342,7 @@ class IsometricRenderer {
     const deskHeight = 8;
     const deskDepth = 20;
 
-    // Desk surface
+    // Desk surface with wood grain effect
     this.drawBox(
       x,
       y,
@@ -298,103 +358,251 @@ class IsometricRenderer {
         shadow: true
       }
     );
+    
+    // Add wood grain texture on top
+    const deskPos = gridToScreen(x, y, z + deskHeight);
+    const deskScreenX = deskPos.x + this.offsetX;
+    const deskScreenY = deskPos.y + this.offsetY;
+    
+    this.ctx.save();
+    this.ctx.globalAlpha = 0.15;
+    this.ctx.strokeStyle = '#451a03';
+    this.ctx.lineWidth = 0.5;
+    for (let i = 0; i < 5; i++) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(deskScreenX - 15 + i * 3, deskScreenY);
+      this.ctx.lineTo(deskScreenX + 15 + i * 3, deskScreenY + 10);
+      this.ctx.stroke();
+    }
+    this.ctx.restore();
 
-    // Monitor
-    const monitorWidth = 12;
-    const monitorHeight = 10;
-    const monitorDepth = 2;
+    // Monitor (ENHANCED)
+    const monitorWidth = 14;       // Slightly larger
+    const monitorHeight = 11;      // Slightly taller
+    const monitorDepth = 2.5;
 
-    // Monitor stand
+    // Monitor stand (thicker, more realistic)
     this.drawBox(
       x,
       y - 5,
       z + deskHeight,
-      4,
-      2,
-      4,
+      5,
+      2.5,
+      5,
       '#1f2937',
-      { outline: true }
+      { outline: true, topColor: '#374151' }
     );
 
-    // Monitor screen
+    // Monitor screen bezel
     this.drawBox(
       x,
       y - 5,
-      z + deskHeight + 2,
+      z + deskHeight + 2.5,
       monitorWidth,
       monitorHeight,
       monitorDepth,
       '#1f2937',
-      { outline: true }
+      { outline: true, topColor: '#111827' }
     );
 
-    // Screen content
+    // Screen content (ENHANCED)
     if (options.monitorOn) {
-      const screenPos = gridToScreen(x, y - 5, z + deskHeight + 2);
+      const screenPos = gridToScreen(x, y - 5, z + deskHeight + 2.5);
       const screenX = screenPos.x + this.offsetX;
       const screenY = screenPos.y + this.offsetY;
 
-      // Screen glow
+      // Enhanced screen glow (larger, more vibrant)
       if (options.monitorGlow) {
         this.ctx.save();
-        this.ctx.globalAlpha = 0.3;
-        this.ctx.fillStyle = options.monitorGlow;
-        this.ctx.beginPath();
-        this.ctx.arc(screenX, screenY + monitorHeight / 2, 20, 0, Math.PI * 2);
-        this.ctx.fill();
+        this.ctx.globalAlpha = 0.4;
+        const glowGradient = this.ctx.createRadialGradient(
+          screenX, screenY + 5, 0,
+          screenX, screenY + 5, 25
+        );
+        glowGradient.addColorStop(0, options.monitorGlow);
+        glowGradient.addColorStop(1, 'transparent');
+        this.ctx.fillStyle = glowGradient;
+        this.ctx.fillRect(screenX - 25, screenY - 20, 50, 50);
         this.ctx.restore();
       }
 
-      // Screen content (simple gradient)
+      // Screen content (richer gradient)
       const gradient = this.ctx.createLinearGradient(
-        screenX - 6,
+        screenX - 7,
         screenY,
-        screenX + 6,
-        screenY + 10
+        screenX + 7,
+        screenY + 11
       );
-      gradient.addColorStop(0, options.monitorGlow || '#3b82f6');
-      gradient.addColorStop(1, this.darkenColor(options.monitorGlow || '#3b82f6', 40));
+      gradient.addColorStop(0, this.lightenColor(options.monitorGlow || '#3b82f6', 20));
+      gradient.addColorStop(0.5, options.monitorGlow || '#3b82f6');
+      gradient.addColorStop(1, this.darkenColor(options.monitorGlow || '#3b82f6', 30));
 
-      // Top face of monitor with content
+      // Top face of monitor with content (larger)
       this.ctx.save();
       this.ctx.beginPath();
       this.ctx.moveTo(screenX, screenY + 2);
-      this.ctx.lineTo(screenX + 6, screenY + 5);
-      this.ctx.lineTo(screenX, screenY + 8);
-      this.ctx.lineTo(screenX - 6, screenY + 5);
+      this.ctx.lineTo(screenX + 7, screenY + 5.5);
+      this.ctx.lineTo(screenX, screenY + 9);
+      this.ctx.lineTo(screenX - 7, screenY + 5.5);
       this.ctx.closePath();
       this.ctx.fillStyle = gradient;
       this.ctx.fill();
       this.ctx.restore();
 
-      // Animated code lines
+      // Animated code lines (more detailed)
       if (options.monitorOn) {
-        const lineY = (Date.now() / 100) % 6;
-        this.ctx.fillStyle = 'rgba(16, 185, 129, 0.6)';
-        this.ctx.fillRect(screenX - 4, screenY + 3 + lineY, 8, 1);
+        this.ctx.save();
+        const time = Date.now();
+        const lines = [
+          { offset: (time / 100) % 7, width: 10, color: 'rgba(16, 185, 129, 0.7)' },
+          { offset: (time / 120 + 2) % 7, width: 7, color: 'rgba(59, 130, 246, 0.6)' },
+          { offset: (time / 90 + 4) % 7, width: 12, color: 'rgba(34, 197, 94, 0.5)' }
+        ];
+        
+        lines.forEach(line => {
+          this.ctx.fillStyle = line.color;
+          this.ctx.fillRect(screenX - line.width / 2, screenY + 3 + line.offset, line.width, 0.8);
+        });
+        this.ctx.restore();
       }
     }
 
-    // Keyboard
+    // Keyboard (ENHANCED with keys visible)
     this.drawBox(
       x,
-      y + 5,
+      y + 6,
       z + deskHeight,
-      8,
-      1,
-      4,
+      10,
+      1.2,
+      5,
       '#374151',
-      { outline: true }
+      { outline: true, topColor: '#4b5563' }
+    );
+    
+    // Keyboard keys (tiny details)
+    const keyboardPos = gridToScreen(x, y + 6, z + deskHeight + 1.2);
+    const keyX = keyboardPos.x + this.offsetX;
+    const keyY = keyboardPos.y + this.offsetY;
+    
+    this.ctx.save();
+    this.ctx.fillStyle = '#1f2937';
+    // Draw a few representative keys
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        this.ctx.fillRect(
+          keyX - 4 + i * 2,
+          keyY + j * 1,
+          1.2,
+          0.8
+        );
+      }
+    }
+    this.ctx.restore();
+
+    // Mouse (NEW - right side of keyboard)
+    this.drawBox(
+      x + 8,
+      y + 8,
+      z + deskHeight,
+      3,
+      1.5,
+      2,
+      '#4b5563',
+      { outline: true, topColor: '#6b7280' }
     );
 
-    // Desk icon/item
+    // Coffee cup (NEW - left corner)
+    const cupX = x - 10;
+    const cupY = y + 8;
+    
+    // Cup body
+    this.drawBox(
+      cupX,
+      cupY,
+      z + deskHeight,
+      3,
+      4,
+      3,
+      '#dc2626',
+      { outline: true, topColor: '#ef4444' }
+    );
+    
+    // Coffee inside (dark circle on top)
+    const cupPos = gridToScreen(cupX, cupY, z + deskHeight + 4);
+    this.ctx.fillStyle = '#431407';
+    this.ctx.beginPath();
+    this.ctx.ellipse(
+      cupPos.x + this.offsetX,
+      cupPos.y + this.offsetY,
+      1.5,
+      0.8,
+      Math.PI / 4,
+      0,
+      Math.PI * 2
+    );
+    this.ctx.fill();
+    
+    // Steam effect (optional, subtle)
+    this.ctx.save();
+    this.ctx.globalAlpha = 0.3;
+    this.ctx.fillStyle = '#ffffff';
+    const steamOffset = Math.sin(Date.now() / 500) * 2;
+    this.ctx.fillText(
+      '~',
+      cupPos.x + this.offsetX - 1,
+      cupPos.y + this.offsetY - 5 + steamOffset
+    );
+    this.ctx.restore();
+
+    // Papers/documents (NEW - scattered on right side)
+    const paper1X = x + 5;
+    const paper1Y = y - 6;
+    
+    // Paper 1
+    this.drawBox(
+      paper1X,
+      paper1Y,
+      z + deskHeight,
+      6,
+      0.2,
+      4,
+      '#f3f4f6',
+      { outline: true, topColor: '#ffffff' }
+    );
+    
+    // Paper 2 (slightly offset)
+    this.drawBox(
+      paper1X + 1,
+      paper1Y + 1,
+      z + deskHeight + 0.2,
+      6,
+      0.2,
+      4,
+      '#e5e7eb',
+      { outline: true, topColor: '#f9fafb' }
+    );
+    
+    // Add tiny text lines on paper
+    const paperPos = gridToScreen(paper1X, paper1Y, z + deskHeight + 0.4);
+    this.ctx.save();
+    this.ctx.strokeStyle = '#6b7280';
+    this.ctx.lineWidth = 0.3;
+    for (let i = 0; i < 3; i++) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(paperPos.x + this.offsetX - 2, paperPos.y + this.offsetY + i);
+      this.ctx.lineTo(paperPos.x + this.offsetX + 2, paperPos.y + this.offsetY + i);
+      this.ctx.stroke();
+    }
+    this.ctx.restore();
+
+    // Desk icon/item (moved to back corner)
     if (options.icon) {
-      const iconPos = gridToScreen(x + 8, y + 8, z + deskHeight);
-      this.ctx.font = '16px sans-serif';
+      const iconPos = gridToScreen(x - 8, y - 8, z + deskHeight);
+      this.ctx.font = '14px sans-serif';
       this.ctx.fillText(
         options.icon,
-        iconPos.x + this.offsetX - 8,
-        iconPos.y + this.offsetY + 8
+        iconPos.x + this.offsetX - 7,
+        iconPos.y + this.offsetY + 7
       );
     }
   }
@@ -455,6 +663,7 @@ export default function OfficeV2Page() {
   const agents = useQuery(api.agents.getAll, {});
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [hoveredAgent, setHoveredAgent] = useState<string | null>(null);
   const [time, setTime] = useState(new Date());
 
   // Agent data
@@ -515,6 +724,32 @@ export default function OfficeV2Page() {
         const agent = agents?.find(a => a.agentId === agentId);
         const isWorking = agent?.status === 'working';
         const isIdle = agent?.status === 'idle';
+        const isHovered = hoveredAgent === agentId;
+
+        // Hover highlight (NEW)
+        if (isHovered) {
+          const hoverPos = gridToScreen(data.x, data.y, 0);
+          ctx.save();
+          ctx.globalAlpha = 0.2;
+          const highlightGradient = ctx.createRadialGradient(
+            hoverPos.x + offsetX,
+            hoverPos.y + offsetY,
+            0,
+            hoverPos.x + offsetX,
+            hoverPos.y + offsetY,
+            40
+          );
+          highlightGradient.addColorStop(0, data.color);
+          highlightGradient.addColorStop(1, 'transparent');
+          ctx.fillStyle = highlightGradient;
+          ctx.fillRect(
+            hoverPos.x + offsetX - 40,
+            hoverPos.y + offsetY - 40,
+            80,
+            80
+          );
+          ctx.restore();
+        }
 
         // Desk
         renderer.drawDesk(data.x, data.y, 0, {
@@ -523,10 +758,10 @@ export default function OfficeV2Page() {
           icon: data.icon
         });
 
-        // Character
+        // Character (slightly larger when hovered)
         const headBob = isWorking ? Math.sin(Date.now() / 500) * 2 : 0;
         renderer.drawCharacter(data.x, data.y - 1, 25, data.color, {
-          scale: 1,
+          scale: isHovered ? 1.05 : 1,
           animation: isWorking ? 'working' : 'idle',
           headBob
         });
@@ -605,6 +840,37 @@ export default function OfficeV2Page() {
     });
   };
 
+  // Hover detection (NEW)
+  const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const offsetX = rect.width / 2;
+    const offsetY = 150;
+
+    const gridPos = screenToGrid(x - offsetX, y - offsetY);
+
+    // Check if hovering over any agent
+    let foundHover = false;
+    Object.entries(agentData).forEach(([agentId, data]) => {
+      const dist = Math.sqrt(
+        Math.pow(gridPos.x - data.x, 2) + Math.pow(gridPos.y - data.y, 2)
+      );
+      if (dist < 1.5) {
+        setHoveredAgent(agentId);
+        foundHover = true;
+      }
+    });
+    
+    if (!foundHover) {
+      setHoveredAgent(null);
+    }
+  };
+
   const selectedAgentData = selectedAgent ? agents?.find(a => a.agentId === selectedAgent) : null;
 
   return (
@@ -621,6 +887,7 @@ export default function OfficeV2Page() {
         <canvas
           ref={canvasRef}
           onClick={handleCanvasClick}
+          onMouseMove={handleCanvasMouseMove}
           className="w-full cursor-pointer"
           style={{ height: '700px' }}
         />
