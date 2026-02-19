@@ -368,8 +368,8 @@ export default function OfficePage() {
                           <div className="flex items-center gap-2">
                             <span className="text-2xl">{agent.avatar}</span>
                             <div>
-                              <div className="font-bold text-sm">{agent.name}</div>
-                              <div className="text-xs text-gray-400">{agent.role}</div>
+                              <div className="font-bold text-sm text-white">{agent.name}</div>
+                              <div className="text-xs text-gray-200">{agent.role}</div>
                             </div>
                           </div>
                           <button 
