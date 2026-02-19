@@ -545,7 +545,7 @@ export default function OfficePage() {
           <div 
             className="absolute left-1/2 top-1/2"
             style={{
-              transform: 'translate(-50%, -50%) rotateX(60deg) rotateZ(-45deg) scale(1.2)',
+              transform: 'translate(-50%, -50%) rotateX(60deg) rotateZ(-45deg) scale(0.7)',
               transformStyle: 'preserve-3d',
               width: '600px',
               height: '600px'
