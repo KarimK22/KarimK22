@@ -335,21 +335,22 @@ export default function OfficePage() {
 
                       {/* Agent Info */}
                       <div className="mt-3 text-center">
-                        <div className="font-bold text-sm transition-all duration-300 
-                                      group-hover:text-white group-hover:scale-105">
+                        <div className="font-bold text-base text-white transition-all duration-300 
+                                      group-hover:scale-105 drop-shadow-lg">
                           {agent.name}
                         </div>
-                        <div className="text-xs text-gray-400 transition-colors duration-300
-                                      group-hover:text-gray-300">{agent.role}</div>
-                        <div className="text-xs text-gray-500 mt-1">{station.desk}</div>
+                        <div className="text-sm text-gray-100 transition-colors duration-300
+                                      group-hover:text-white drop-shadow-md">{agent.role}</div>
+                        <div className="text-xs text-gray-300 mt-1">{station.desk}</div>
                         
                         {agent.currentTask && (
                           <div className="mt-2 px-3 py-1.5 
-                                        bg-gray-800/95 backdrop-blur-md rounded-lg text-xs max-w-[160px] 
-                                        border border-gray-700/60 
+                                        bg-gray-800/95 backdrop-blur-md rounded-lg text-sm max-w-[160px] 
+                                        border border-gray-600/80 
                                         transition-all duration-500 ease-out
-                                        group-hover:bg-gray-800 group-hover:border-gray-600
-                                        shadow-xl group-hover:shadow-2xl">
+                                        group-hover:bg-gray-800 group-hover:border-gray-500
+                                        shadow-xl group-hover:shadow-2xl
+                                        text-gray-100">
                             💭 {agent.currentTask}
                           </div>
                         )}
