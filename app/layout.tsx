@@ -34,6 +34,7 @@ export default function RootLayout({
                 <NavLink href="/calendar" icon="📅">Calendar</NavLink>
                 <NavLink href="/tasks" icon="✅">Tasks</NavLink>
                 <NavLink href="/content" icon="📝">Content Pipeline</NavLink>
+                <NavLink href="/documents" icon="📄">Documents</NavLink>
                 <NavLink href="/office" icon="🏢">Office</NavLink>
                 <NavLink href="/team" icon="👥">Team</NavLink>
               </div>
