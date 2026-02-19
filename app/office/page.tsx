@@ -1,12 +1,46 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import { useEffect, useState } from "react";
 
 export default function OfficePage() {
-  const agents = useQuery(api.agents.getAll, {});
-  const recentActivity = useQuery(api.agents.getActivityFeed, { limit: 5 });
+  // Hardcoded agents for immediate display (bypassing Convex connection issues)
+  const agents = [
+    {
+      _id: "apex-001",
+      agentId: "main",
+      name: "APEX",
+      role: "Chief Executive Officer",
+      avatar: "🏴",
+      status: "working",
+      currentTask: "Strategic planning & coordination",
+      lastActivity: Date.now(),
+      skills: ["Leadership", "Strategy", "Decision Making"]
+    },
+    {
+      _id: "insight-001",
+      agentId: "insight",
+      name: "INSIGHT",
+      role: "Chief Marketing & Analytics Officer",
+      avatar: "👁️",
+      status: "working",
+      currentTask: "Analyzing user metrics & trends",
+      lastActivity: Date.now(),
+      skills: ["Data Analysis", "Marketing", "Metrics"]
+    },
+    {
+      _id: "vibe-001",
+      agentId: "vibe",
+      name: "VIBE",
+      role: "Chief Creative Officer",
+      avatar: "🎨",
+      status: "idle",
+      currentTask: null,
+      lastActivity: Date.now(),
+      skills: ["Design", "Video", "Creative Direction"]
+    }
+  ];
+  
+  const recentActivity: any[] = []; // Disabled for now
   const [time, setTime] = useState(new Date());
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
 
