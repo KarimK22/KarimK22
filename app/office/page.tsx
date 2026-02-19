@@ -70,7 +70,7 @@ export default function OfficePage() {
               return (
                 <div
                   key={station.id}
-                  className="absolute"
+                  className="absolute group"
                   style={{
                     left: `${station.x}%`,
                     top: `${station.y}%`,
@@ -78,14 +78,27 @@ export default function OfficePage() {
                   }}
                 >
                   {/* Desk */}
-                  <div className="relative">
+                  <div className="relative transition-all duration-300 ease-out 
+                                group-hover:scale-105 group-hover:-translate-y-1">
+                    {/* Status Glow Effect */}
+                    <div className={`
+                      absolute inset-0 rounded-lg blur-xl opacity-0 
+                      group-hover:opacity-100 transition-opacity duration-300
+                      ${isWorking ? 'bg-green-500/30' : 
+                        isIdle ? 'bg-amber-500/30' : 
+                        'bg-gray-500/20'}
+                    `} style={{ transform: 'scale(1.2)' }} />
+                    
                     {/* Desk surface */}
                     <div className="w-32 h-24 bg-gradient-to-br from-amber-900/40 to-amber-950/40 
                                   rounded-lg border-2 border-amber-800/50 mb-2
-                                  shadow-xl relative overflow-hidden">
+                                  shadow-xl relative overflow-hidden
+                                  transition-all duration-300 ease-out
+                                  group-hover:border-amber-700/70 group-hover:shadow-2xl">
                       {/* Computer monitor */}
                       <div className="absolute top-2 left-1/2 transform -translate-x-1/2 
-                                    w-16 h-12 bg-gray-800 rounded border border-gray-600">
+                                    w-16 h-12 bg-gray-800 rounded border border-gray-600
+                                    transition-all duration-300">
                         {/* Screen glow when working */}
                         {isWorking && (
                           <div className="w-full h-full bg-gradient-to-b from-blue-400/30 to-green-400/30 
@@ -105,17 +118,28 @@ export default function OfficePage() {
                     <div className="w-32 flex flex-col items-center">
                       <div className={`
                         w-16 h-16 rounded-full flex items-center justify-center text-3xl
-                        relative
-                        ${isWorking ? 'bg-green-900/30 border-2 border-green-500 ring-4 ring-green-500/20 animate-pulse' : 
-                          isIdle ? 'bg-yellow-900/30 border-2 border-yellow-500' :
-                          'bg-gray-800 border-2 border-gray-600'}
+                        relative transition-all duration-300 ease-out
+                        ${isWorking ? 'bg-green-900/30 border-2 border-green-500 shadow-lg shadow-green-500/50' : 
+                          isIdle ? 'bg-amber-900/30 border-2 border-amber-500 shadow-lg shadow-amber-500/50' :
+                          'bg-gray-800 border-2 border-gray-600 shadow-lg shadow-gray-500/20'}
                       `}>
+                        {/* Animated glow ring */}
+                        <div className={`
+                          absolute inset-0 rounded-full transition-all duration-300
+                          ${isWorking ? 'ring-4 ring-green-500/20 animate-pulse' : 
+                            isIdle ? 'ring-4 ring-amber-500/20' :
+                            'ring-0'}
+                        `} />
+                        
                         {agent.avatar}
                         
                         {/* Status indicator */}
                         <div className={`
                           absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-gray-900
-                          ${isWorking ? 'bg-green-500' : isIdle ? 'bg-yellow-500' : 'bg-gray-500'}
+                          transition-all duration-300
+                          ${isWorking ? 'bg-green-500 shadow-lg shadow-green-500/50' : 
+                            isIdle ? 'bg-amber-500 shadow-lg shadow-amber-500/50' : 
+                            'bg-gray-500'}
                         `} />
 
                         {/* Working animation - typing hands */}
@@ -128,12 +152,17 @@ export default function OfficePage() {
 
                       {/* Agent Info */}
                       <div className="mt-2 text-center">
-                        <div className="font-bold text-sm">{agent.name}</div>
-                        <div className="text-xs text-gray-400">{agent.role}</div>
+                        <div className="font-bold text-sm transition-colors duration-300 
+                                      group-hover:text-white">{agent.name}</div>
+                        <div className="text-xs text-gray-400 transition-colors duration-300
+                                      group-hover:text-gray-300">{agent.role}</div>
                         <div className="text-xs text-gray-500 mt-1">{station.desk}</div>
                         {agent.currentTask && (
-                          <div className="mt-2 px-2 py-1 bg-gray-800/80 rounded text-xs max-w-[140px] 
-                                        border border-gray-700 backdrop-blur">
+                          <div className="mt-2 px-2 py-1 bg-gray-800/90 backdrop-blur-md rounded text-xs max-w-[140px] 
+                                        border border-gray-700/50 
+                                        transition-all duration-300 ease-out
+                                        group-hover:bg-gray-800/95 group-hover:border-gray-600
+                                        shadow-lg">
                             💭 {agent.currentTask}
                           </div>
                         )}
@@ -167,7 +196,8 @@ export default function OfficePage() {
       {/* Live Activity Feed */}
       <div className="grid grid-cols-2 gap-6">
         {/* Activity Log */}
-        <div className="bg-gray-900 rounded-lg border border-gray-800 p-6">
+        <div className="bg-gray-900/50 backdrop-blur-md rounded-lg border border-gray-800/50 p-6
+                      shadow-xl transition-all duration-300 hover:border-gray-700/70">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <span className="text-2xl">📋</span>
             Live Activity
@@ -180,8 +210,12 @@ export default function OfficePage() {
                 return (
                   <div
                     key={activity._id}
-                    className="flex items-start gap-3 text-sm bg-gray-800/50 rounded-lg p-3
-                             border border-gray-700/50 hover:border-gray-600 transition-colors"
+                    className="flex items-start gap-3 text-sm 
+                             bg-gray-800/50 backdrop-blur-sm rounded-lg p-3
+                             border border-gray-700/50 
+                             hover:border-gray-600 hover:bg-gray-800/70
+                             transition-all duration-300 ease-out
+                             shadow-lg hover:shadow-xl"
                   >
                     <span className="text-2xl">{agent?.avatar ?? "🤖"}</span>
                     <div className="flex-1 min-w-0">
@@ -203,50 +237,72 @@ export default function OfficePage() {
         </div>
 
         {/* Team Status */}
-        <div className="bg-gray-900 rounded-lg border border-gray-800 p-6">
+        <div className="bg-gray-900/50 backdrop-blur-md rounded-lg border border-gray-800/50 p-6
+                      shadow-xl transition-all duration-300 hover:border-gray-700/70">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <span className="text-2xl">👥</span>
             Team Status
           </h3>
           <div className="space-y-4">
-            {agents?.map((agent) => (
-              <div key={agent._id} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{agent.avatar}</span>
-                  <div>
-                    <div className="font-semibold">{agent.name}</div>
-                    <div className="text-xs text-gray-400">{agent.role}</div>
+            {agents?.map((agent) => {
+              const isWorking = agent.status === "working";
+              const isIdle = agent.status === "idle";
+              
+              return (
+                <div key={agent._id} 
+                     className="flex items-center justify-between
+                              bg-gray-800/30 backdrop-blur-sm rounded-lg p-3
+                              border border-gray-700/30
+                              hover:border-gray-600/50 hover:bg-gray-800/50
+                              transition-all duration-300 ease-out
+                              shadow-md hover:shadow-lg">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{agent.avatar}</span>
+                    <div>
+                      <div className="font-semibold">{agent.name}</div>
+                      <div className="text-xs text-gray-400">{agent.role}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className={`
+                      w-3 h-3 rounded-full transition-all duration-300
+                      ${isWorking ? 'bg-green-500 shadow-lg shadow-green-500/50 animate-pulse' :
+                        isIdle ? 'bg-amber-500 shadow-lg shadow-amber-500/50' :
+                        'bg-gray-500'}
+                    `} />
+                    <span className="text-sm capitalize text-gray-400">{agent.status}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${
-                    agent.status === "working" ? "bg-green-500 animate-pulse" :
-                    agent.status === "idle" ? "bg-yellow-500" :
-                    "bg-gray-500"
-                  }`} />
-                  <span className="text-sm capitalize text-gray-400">{agent.status}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Stats */}
-          <div className="mt-6 pt-6 border-t border-gray-800">
+          <div className="mt-6 pt-6 border-t border-gray-800/50">
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-green-400">
+              <div className="bg-gray-800/20 backdrop-blur-sm rounded-lg p-3
+                            border border-gray-700/20
+                            transition-all duration-300 hover:border-gray-600/30">
+                <div className="text-2xl font-bold text-green-400 
+                              transition-all duration-300 hover:text-green-300">
                   {agents?.filter(a => a.status === "working").length ?? 0}
                 </div>
                 <div className="text-xs text-gray-500">Working</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-yellow-400">
+              <div className="bg-gray-800/20 backdrop-blur-sm rounded-lg p-3
+                            border border-gray-700/20
+                            transition-all duration-300 hover:border-gray-600/30">
+                <div className="text-2xl font-bold text-amber-400
+                              transition-all duration-300 hover:text-amber-300">
                   {agents?.filter(a => a.status === "idle").length ?? 0}
                 </div>
                 <div className="text-xs text-gray-500">Idle</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-gray-400">
+              <div className="bg-gray-800/20 backdrop-blur-sm rounded-lg p-3
+                            border border-gray-700/20
+                            transition-all duration-300 hover:border-gray-600/30">
+                <div className="text-2xl font-bold text-gray-400
+                              transition-all duration-300 hover:text-gray-300">
                   {agents?.filter(a => a.status === "offline").length ?? 0}
                 </div>
                 <div className="text-xs text-gray-500">Offline</div>
