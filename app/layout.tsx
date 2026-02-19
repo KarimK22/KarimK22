@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import Link from "next/link";
+import AnimatedBackground from "./components/AnimatedBackground";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,10 +20,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.className} bg-black text-white`}>
+        {/* Animated space background */}
+        <AnimatedBackground />
+        
         <Providers>
           <div className="flex h-screen">
             {/* Sidebar */}
-            <nav className="w-64 bg-gray-900 border-r border-gray-800 p-4">
+            <nav className="w-64 bg-gray-900/80 backdrop-blur-md border-r border-gray-800/50 p-4">
               <div className="mb-8">
                 <h1 className="text-2xl font-bold">🏴 Mission Control</h1>
                 <p className="text-sm text-gray-400">APEX AI Company</p>
