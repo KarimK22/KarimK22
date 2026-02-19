@@ -9,8 +9,8 @@ import { useEffect, useRef, useState } from "react";
 // ========================================
 
 const ISO_ANGLE = Math.PI / 6; // 30 degrees
-const TILE_WIDTH = 128; // Doubled from 64
-const TILE_HEIGHT = 64; // Doubled from 32
+const TILE_WIDTH = 256; // 4x from original 64
+const TILE_HEIGHT = 128; // 4x from original 32
 
 /**
  * Easing functions for smooth animations
@@ -696,9 +696,9 @@ export default function OfficeV2Page() {
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Center offset
+      // Center offset  
       const offsetX = rect.width / 2;
-      const offsetY = 300; // Increased from 150 to center vertically
+      const offsetY = rect.height / 2 - 100; // Center vertically with room for labels
 
       const renderer = new IsometricRenderer(ctx, offsetX, offsetY);
 
