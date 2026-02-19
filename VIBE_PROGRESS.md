@@ -1,9 +1,12 @@
 # VIBE Progress - Isometric Office V2
 
-**Last Updated:** 2026-02-19 13:59 UTC  
-**Status:** Stage 2 Complete - Deployed for Mr. X Review  
-**Total Time:** 5 hours  
-**APEX Feedback:** "Excellent work. CEO-ready quality." ✅
+**Last Updated:** 2026-02-19 14:08 UTC  
+**Status:** CRITICAL BUG FIX IN PROGRESS  
+**Total Time:** 5 hours + 30 min debugging  
+**BUG #1:** Tile scale too small (64x32) → APEX fixed with 4x (256x128) ✅  
+**BUG #2:** 4x scale pushed agents off-screen → only 1 visible ❌  
+**FIX #2:** Adjusted agent positions + grid size for new scale  
+**Current Fix:** Agents repositioned closer, grid reduced, offsets matched ✅
 
 ---
 

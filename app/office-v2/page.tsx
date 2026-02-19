@@ -666,11 +666,11 @@ export default function OfficeV2Page() {
   const [hoveredAgent, setHoveredAgent] = useState<string | null>(null);
   const [time, setTime] = useState(new Date());
 
-  // Agent data
+  // Agent data (ADJUSTED: tighter positions for 4x scale)
   const agentData = {
-    main: { x: 2, y: 2, color: '#10b981', icon: '💻', name: 'APEX', role: 'CEO' },
-    insight: { x: 6, y: 2, color: '#3b82f6', icon: '📊', name: 'INSIGHT', role: 'Analyst' },
-    vibe: { x: 4, y: 5, color: '#f59e0b', icon: '🎨', name: 'VIBE', role: 'Designer' }
+    main: { x: 0, y: 0, color: '#10b981', icon: '💻', name: 'APEX', role: 'CEO' },
+    insight: { x: 3, y: 0, color: '#3b82f6', icon: '📊', name: 'INSIGHT', role: 'Analyst' },
+    vibe: { x: 1.5, y: 2.5, color: '#f59e0b', icon: '🎨', name: 'VIBE', role: 'Designer' }
   };
 
   useEffect(() => {
@@ -702,29 +702,33 @@ export default function OfficeV2Page() {
 
       const renderer = new IsometricRenderer(ctx, offsetX, offsetY);
 
-      // Draw floor grid
-      for (let x = -4; x <= 8; x++) {
-        for (let y = -4; y <= 8; y++) {
+      // Draw floor grid (ADJUSTED: smaller grid for 4x scale)
+      for (let x = -2; x <= 4; x++) {
+        for (let y = -2; y <= 4; y++) {
           const isDark = (x + y) % 2 === 0;
           renderer.drawFloorTile(x, y, isDark);
         }
       }
 
-      // Draw meeting table (center)
-      renderer.drawBox(3.5, 3.5, 0, 24, 6, 16, '#4b5563', {
+      // Draw meeting table (center, adjusted for new grid)
+      renderer.drawBox(1, 1, 0, 24, 6, 16, '#4b5563', {
         topColor: '#6b7280',
         rightColor: '#374151',
         outline: true,
         shadow: true
       });
-      renderer.drawLabel(4, 4, 8, '📋 Meeting', { fontSize: 10, color: '#9ca3af' });
+      renderer.drawLabel(1, 1, 8, '📋 Meeting', { fontSize: 10, color: '#9ca3af' });
 
-      // Draw agents
+      // Draw agents (FIXED: render even if Convex data missing)
       Object.entries(agentData).forEach(([agentId, data]) => {
         const agent = agents?.find(a => a.agentId === agentId);
         const isWorking = agent?.status === 'working';
-        const isIdle = agent?.status === 'idle';
+        const isIdle = agent?.status === 'idle' || !agent; // Default to idle if no data
         const isHovered = hoveredAgent === agentId;
+        
+        // Use Convex name if available, otherwise fallback to hardcoded
+        const displayName = agent?.name || data.name;
+        const displayRole = agent?.role || data.role;
 
         // Hover highlight (NEW)
         if (isHovered) {
@@ -760,26 +764,26 @@ export default function OfficeV2Page() {
 
         // Character (slightly larger when hovered)
         const headBob = isWorking ? Math.sin(Date.now() / 500) * 2 : 0;
-        renderer.drawCharacter(data.x, data.y - 1, 25, data.color, {
+        renderer.drawCharacter(data.x, data.y - 1, 0, data.color, {
           scale: isHovered ? 1.05 : 1,
           animation: isWorking ? 'working' : 'idle',
           headBob
         });
 
-        // Name label
-        renderer.drawLabel(data.x, data.y, 60, data.name, {
+        // Name label (use display values)
+        renderer.drawLabel(data.x, data.y, 40, displayName, {
           fontSize: 14,
           bold: true,
           color: '#ffffff'
         });
-        renderer.drawLabel(data.x, data.y, 75, data.role, {
+        renderer.drawLabel(data.x, data.y, 48, displayRole, {
           fontSize: 10,
           color: '#9ca3af'
         });
 
         // Status indicator
         const statusColor = isWorking ? '#10b981' : isIdle ? '#f59e0b' : '#6b7280';
-        const statusPos = gridToScreen(data.x, data.y, 80);
+        const statusPos = gridToScreen(data.x, data.y, 54);
         ctx.save();
         ctx.fillStyle = statusColor;
         ctx.shadowColor = statusColor;
@@ -791,22 +795,22 @@ export default function OfficeV2Page() {
 
         // Current task
         if (agent?.currentTask) {
-          renderer.drawLabel(data.x, data.y, 90, `💭 ${agent.currentTask}`, {
+          renderer.drawLabel(data.x, data.y, 60, `💭 ${agent.currentTask}`, {
             fontSize: 9,
             color: '#d1d5db'
           });
         }
       });
 
-      // Decorations
-      const decorPos1 = gridToScreen(0, 0, 0);
-      ctx.font = '24px sans-serif';
+      // Decorations (adjusted for smaller grid)
+      const decorPos1 = gridToScreen(-1.5, -1.5, 0);
+      ctx.font = '48px sans-serif';  // Larger emoji for 4x scale
       ctx.fillText('🪴', decorPos1.x + offsetX, decorPos1.y + offsetY);
 
-      const decorPos2 = gridToScreen(8, 8, 0);
+      const decorPos2 = gridToScreen(4, 4, 0);
       ctx.fillText('🚪', decorPos2.x + offsetX, decorPos2.y + offsetY);
 
-      const decorPos3 = gridToScreen(-2, -2, 0);
+      const decorPos3 = gridToScreen(-1, -1, 0);
       ctx.fillText('☕', decorPos3.x + offsetX, decorPos3.y + offsetY);
 
       requestAnimationFrame(render);
@@ -825,7 +829,7 @@ export default function OfficeV2Page() {
     const y = e.clientY - rect.top;
 
     const offsetX = rect.width / 2;
-    const offsetY = 150;
+    const offsetY = rect.height / 2 - 100; // Match rendering offset
 
     const gridPos = screenToGrid(x - offsetX, y - offsetY);
 
@@ -850,7 +854,7 @@ export default function OfficeV2Page() {
     const y = e.clientY - rect.top;
 
     const offsetX = rect.width / 2;
-    const offsetY = 150;
+    const offsetY = rect.height / 2 - 100; // Match rendering offset
 
     const gridPos = screenToGrid(x - offsetX, y - offsetY);
 
