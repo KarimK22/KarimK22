@@ -368,8 +368,8 @@ export default function OfficePage() {
                           <div className="flex items-center gap-2">
                             <span className="text-2xl">{agent.avatar}</span>
                             <div>
-                              <div className="font-bold text-sm text-white">{agent.name}</div>
-                              <div className="text-xs text-gray-200">{agent.role}</div>
+                              <div className="font-bold text-sm" style={{ color: '#ffffff' }}>{agent.name}</div>
+                              <div className="text-xs" style={{ color: '#e5e7eb' }}>{agent.role}</div>
                             </div>
                           </div>
                           <button 
@@ -384,26 +384,24 @@ export default function OfficePage() {
                         
                         <div className="space-y-2 text-xs">
                           <div className="flex justify-between items-center py-2 border-t border-gray-800">
-                            <span className="text-gray-400">Status</span>
-                            <span className={`font-medium ${
-                              isWorking ? 'text-green-400' :
-                              isIdle ? 'text-amber-400' :
-                              'text-gray-400'
-                            }`}>
+                            <span style={{ color: '#9ca3af' }}>Status</span>
+                            <span className="font-medium" style={{ 
+                              color: isWorking ? '#4ade80' : isIdle ? '#fbbf24' : '#9ca3af'
+                            }}>
                               {agent.status}
                             </span>
                           </div>
                           
                           {agent.currentTask && (
                             <div className="py-2 border-t border-gray-800">
-                              <div className="text-gray-400 mb-1">Current Task</div>
-                              <div className="text-white">{agent.currentTask}</div>
+                              <div style={{ color: '#9ca3af' }} className="mb-1">Current Task</div>
+                              <div style={{ color: '#ffffff' }}>{agent.currentTask}</div>
                             </div>
                           )}
                           
                           <div className="flex justify-between items-center py-2 border-t border-gray-800">
-                            <span className="text-gray-400">Last Active</span>
-                            <span className="text-white">
+                            <span style={{ color: '#9ca3af' }}>Last Active</span>
+                            <span style={{ color: '#ffffff' }}>
                               {agent.lastActivity ? new Date(agent.lastActivity).toLocaleTimeString() : 'Never'}
                             </span>
                           </div>
