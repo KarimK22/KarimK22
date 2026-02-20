@@ -85,9 +85,9 @@ export default function AnimatedBackground() {
     // Draw rotating globe with gradient and dotted overlay
     const drawGlobe = (time: number) => {
       const rect = canvas.getBoundingClientRect();
-      const centerX = rect.width * 0.75; // Position right of center
+      const centerX = rect.width * 0.65; // Position centered-right (moved from 0.75)
       const centerY = rect.height * 0.5;
-      const radius = Math.min(rect.width, rect.height) * 0.25;
+      const radius = Math.min(rect.width, rect.height) * 0.32; // Larger, more prominent (increased from 0.25)
 
       // Slow rotation
       globeRotation = time * 0.00005; // Very subtle rotation
@@ -212,7 +212,7 @@ export default function AnimatedBackground() {
       className="fixed inset-0 w-full h-full -z-10 pointer-events-none"
       style={{ 
         background: '#000000',
-        opacity: 0.6 // Subtle so it doesn't overpower content
+        opacity: 0.9 // Bold and vibrant (increased from 0.6 to match reference)
       }}
     />
   );
