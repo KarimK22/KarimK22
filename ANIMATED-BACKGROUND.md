@@ -12,8 +12,8 @@
 ### 1. **Rotating 3D Globe**
 - Purple-to-blue gradient sphere
 - Subtle rotation animation (0.00005 rad/frame)
-- Positioned right of center (75% x-axis)
-- Scales to 25% of viewport (responsive)
+- Positioned centered-right (65% x-axis)
+- Scales to 32% of viewport (prominent, responsive)
 
 ### 2. **Dotted Network Overlay**
 - 24 latitude lines × 36 dots per line
@@ -65,9 +65,9 @@
 
 ```typescript
 // Line 87-89
-const centerX = rect.width * 0.75; // 0.5 = center, 0.75 = right of center
+const centerX = rect.width * 0.65; // 0.5 = center, 0.65 = centered-right
 const centerY = rect.height * 0.5; // 0.5 = center
-const radius = Math.min(rect.width, rect.height) * 0.25; // 0.25 = 25% of viewport
+const radius = Math.min(rect.width, rect.height) * 0.32; // 0.32 = 32% of viewport (prominent)
 ```
 
 ### Change Rotation Speed
@@ -105,8 +105,8 @@ const numStars = Math.floor((rect.width * rect.height) / 8000); // Lower divisor
 ### Adjust Background Opacity
 
 ```typescript
-// Line 194
-opacity: 0.6 // 0 = invisible, 1 = fully opaque
+// Line 211
+opacity: 0.9 // 0 = invisible, 1 = fully opaque (bold and vibrant)
 ```
 
 ---
