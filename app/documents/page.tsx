@@ -6,8 +6,11 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function DocumentsPage() {
-  const documents = useQuery(api.contentPipeline.getByStage, {});
+  const documentsRaw = useQuery(api.contentPipeline.getByStage, {});
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
+
+  // Sort documents by creation time (newest first)
+  const documents = documentsRaw?.sort((a, b) => b._creationTime - a._creationTime);
 
   const getPriorityColor = (stage: string) => {
     switch (stage) {
