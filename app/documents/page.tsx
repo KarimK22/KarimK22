@@ -5,7 +5,7 @@ import { api } from "../../convex/_generated/api";
 import Link from "next/link";
 
 export default function DocumentsPage() {
-  const documents = useQuery(api.contentPipeline.getAll, {});
+  const documents = useQuery(api.contentPipeline.getByStage, {});
 
   const getPriorityColor = (stage: string) => {
     switch (stage) {
