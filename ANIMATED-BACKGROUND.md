@@ -2,8 +2,31 @@
 
 **Component:** `AnimatedBackground.tsx`  
 **Location:** `/app/components/AnimatedBackground.tsx`  
-**Status:** Production-ready  
+**Status:** Production-ready (v3 - Feb 22, 2026)  
 **Performance:** 60fps target, optimized for all screen sizes
+
+---
+
+## 🔧 Version History & Fixes
+
+### **v3 (Feb 22, 2026) - Readability & Professional Polish**
+**Issues fixed:**
+- ❌ Canvas opacity too high (0.9) → washing out UI text
+- ❌ Globe position (65%, 50%) → covering main content area
+- ❌ Globe size (32%) → too large, dominating view
+- ❌ Globe gradients too bright → overpowering subtle aesthetic
+
+**Changes:**
+- ✅ Canvas opacity: `0.9 → 0.35` (subtle, professional)
+- ✅ Globe position: `(65%, 50%) → (85%, 25%)` (top-right corner, out of content flow)
+- ✅ Globe size: `32% → 20%` (background element, not focal point)
+- ✅ Globe gradient opacities: reduced 20-40% across all layers
+- ✅ Glow ring opacity: reduced 25-33%
+
+**Result:** Clean, professional background that enhances UI without overpowering it. Text fully readable, no visual interference.
+
+### **v2 (Feb 19, 2026) - Initial Deployment**
+- First production version with rotating globe, starfield, atmospheric glow
 
 ---
 
@@ -12,8 +35,8 @@
 ### 1. **Rotating 3D Globe**
 - Purple-to-blue gradient sphere
 - Subtle rotation animation (0.00005 rad/frame)
-- Positioned centered-right (65% x-axis)
-- Scales to 32% of viewport (prominent, responsive)
+- Positioned top-right corner (85% x-axis, 25% y-axis)
+- Scales to 20% of viewport (subtle background element, responsive)
 
 ### 2. **Dotted Network Overlay**
 - 24 latitude lines × 36 dots per line
@@ -65,9 +88,9 @@
 
 ```typescript
 // Line 87-89
-const centerX = rect.width * 0.65; // 0.5 = center, 0.65 = centered-right
-const centerY = rect.height * 0.5; // 0.5 = center
-const radius = Math.min(rect.width, rect.height) * 0.32; // 0.32 = 32% of viewport (prominent)
+const centerX = rect.width * 0.85; // Top-right corner (out of content flow)
+const centerY = rect.height * 0.25; // Upper quadrant (away from main content)
+const radius = Math.min(rect.width, rect.height) * 0.20; // 20% of viewport (subtle)
 ```
 
 ### Change Rotation Speed
@@ -106,7 +129,7 @@ const numStars = Math.floor((rect.width * rect.height) / 8000); // Lower divisor
 
 ```typescript
 // Line 211
-opacity: 0.9 // 0 = invisible, 1 = fully opaque (bold and vibrant)
+opacity: 0.35 // 0 = invisible, 1 = fully opaque (subtle and professional)
 ```
 
 ---
