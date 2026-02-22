@@ -3,9 +3,11 @@
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function DocumentsPage() {
   const documents = useQuery(api.contentPipeline.getByStage, {});
+  const [selectedDoc, setSelectedDoc] = useState<any>(null);
 
   const getPriorityColor = (stage: string) => {
     switch (stage) {
@@ -28,12 +30,13 @@ export default function DocumentsPage() {
   };
 
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
+    return new Date(timestamp).toLocaleString('en-US', {
       month: '2-digit',
       day: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: true
     });
   };
 
@@ -58,9 +61,11 @@ export default function DocumentsPage() {
         {documents?.map((doc) => (
           <div
             key={doc._id}
+            onClick={() => setSelectedDoc(doc)}
             className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur
                      rounded-xl border border-gray-700/50 p-6
-                     hover:border-gray-600 hover:shadow-xl transition-all duration-300"
+                     hover:border-blue-500 hover:shadow-xl hover:shadow-blue-500/10 
+                     transition-all duration-300 cursor-pointer"
           >
             {/* Header Row */}
             <div className="flex items-start justify-between mb-4">
@@ -88,9 +93,9 @@ export default function DocumentsPage() {
             </h3>
 
             {/* Summary/Content Preview */}
-            <p className="text-gray-300 mb-4 line-clamp-3">
-              {doc.content?.substring(0, 300)}
-              {doc.content && doc.content.length > 300 && '...'}
+            <p className="text-gray-300 mb-4 line-clamp-2">
+              {doc.content?.substring(0, 200)}
+              {doc.content && doc.content.length > 200 && '...'}
             </p>
 
             {/* Footer */}
@@ -101,11 +106,10 @@ export default function DocumentsPage() {
                 <span className="text-sm font-medium text-white">{doc.assignee || "Unassigned"}</span>
               </div>
 
-              {/* Platform */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-400">Platform:</span>
-                <span className="text-sm font-medium text-white capitalize">{doc.platform}</span>
-              </div>
+              {/* View Button */}
+              <button className="text-sm text-blue-400 hover:text-blue-300 font-medium">
+                View Full Document →
+              </button>
             </div>
           </div>
         ))}
@@ -129,6 +133,78 @@ export default function DocumentsPage() {
           </div>
         )}
       </div>
+
+      {/* Document Detail Modal */}
+      {selectedDoc && (
+        <div 
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-8"
+          onClick={() => setSelectedDoc(null)}
+        >
+          <div 
+            className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700 
+                       max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="sticky top-0 bg-gray-900/95 backdrop-blur border-b border-gray-700 p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <span className={`${getTypeColor(selectedDoc.contentType)} px-3 py-1.5 rounded-full text-xs font-bold uppercase`}>
+                    {selectedDoc.contentType}
+                  </span>
+                  <span className={`${getPriorityColor(selectedDoc.stage)} px-3 py-1.5 rounded-full text-xs font-bold uppercase`}>
+                    {selectedDoc.stage}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSelectedDoc(null)}
+                  className="text-gray-400 hover:text-white text-2xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-white mb-2">
+                {selectedDoc.title}
+              </h2>
+              
+              <div className="flex items-center gap-6 text-sm text-gray-400">
+                <span>📅 {formatDate(selectedDoc._creationTime)}</span>
+                <span>👤 {selectedDoc.assignee || "Unassigned"}</span>
+                <span>📍 {selectedDoc.platform}</span>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-8">
+              <div className="prose prose-invert prose-lg max-w-none">
+                <div className="whitespace-pre-wrap text-gray-200 leading-relaxed">
+                  {selectedDoc.content}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Actions */}
+            <div className="sticky bottom-0 bg-gray-900/95 backdrop-blur border-t border-gray-700 p-6 flex justify-between">
+              <button
+                onClick={() => setSelectedDoc(null)}
+                className="px-6 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-colors"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(selectedDoc.content || '');
+                  alert('Content copied to clipboard!');
+                }}
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+              >
+                📋 Copy Content
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
