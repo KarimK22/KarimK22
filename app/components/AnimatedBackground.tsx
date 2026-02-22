@@ -85,20 +85,20 @@ export default function AnimatedBackground() {
     // Draw rotating globe with gradient and dotted overlay
     const drawGlobe = (time: number) => {
       const rect = canvas.getBoundingClientRect();
-      const centerX = rect.width * 0.65; // Position centered-right (moved from 0.75)
-      const centerY = rect.height * 0.5;
-      const radius = Math.min(rect.width, rect.height) * 0.32; // Larger, more prominent (increased from 0.25)
+      const centerX = rect.width * 0.85; // Top-right corner (subtle, out of content flow)
+      const centerY = rect.height * 0.25; // Upper quadrant (away from main content)
+      const radius = Math.min(rect.width, rect.height) * 0.20; // Subtle background element
 
       // Slow rotation
       globeRotation = time * 0.00005; // Very subtle rotation
 
-      // Atmospheric glow (outer ring)
+      // Atmospheric glow (outer ring) - subtle
       const glowGradient = ctx.createRadialGradient(
         centerX, centerY, radius * 0.9,
         centerX, centerY, radius * 1.5
       );
-      glowGradient.addColorStop(0, 'rgba(139, 92, 246, 0.3)'); // Purple
-      glowGradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.2)'); // Blue
+      glowGradient.addColorStop(0, 'rgba(139, 92, 246, 0.2)'); // Purple (reduced)
+      glowGradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.15)'); // Blue (reduced)
       glowGradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
       
       ctx.fillStyle = glowGradient;
@@ -106,15 +106,15 @@ export default function AnimatedBackground() {
       ctx.arc(centerX, centerY, radius * 1.5, 0, Math.PI * 2);
       ctx.fill();
 
-      // Main globe gradient (purple to blue)
+      // Main globe gradient (purple to blue) - subtle opacities
       const globeGradient = ctx.createRadialGradient(
         centerX - radius * 0.3, centerY - radius * 0.3, radius * 0.1,
         centerX, centerY, radius
       );
-      globeGradient.addColorStop(0, 'rgba(167, 139, 250, 0.8)'); // Light purple
-      globeGradient.addColorStop(0.4, 'rgba(139, 92, 246, 0.7)'); // Purple
-      globeGradient.addColorStop(0.7, 'rgba(59, 130, 246, 0.6)'); // Blue
-      globeGradient.addColorStop(1, 'rgba(37, 99, 235, 0.5)'); // Dark blue
+      globeGradient.addColorStop(0, 'rgba(167, 139, 250, 0.6)'); // Light purple (reduced)
+      globeGradient.addColorStop(0.4, 'rgba(139, 92, 246, 0.5)'); // Purple (reduced)
+      globeGradient.addColorStop(0.7, 'rgba(59, 130, 246, 0.4)'); // Blue (reduced)
+      globeGradient.addColorStop(1, 'rgba(37, 99, 235, 0.3)'); // Dark blue (reduced)
       
       ctx.fillStyle = globeGradient;
       ctx.beginPath();
@@ -212,7 +212,7 @@ export default function AnimatedBackground() {
       className="fixed inset-0 w-full h-full -z-10 pointer-events-none"
       style={{ 
         background: '#000000',
-        opacity: 0.9 // Bold and vibrant (increased from 0.6 to match reference)
+        opacity: 0.35 // Subtle and professional (reduced from 0.9 to prevent UI washout)
       }}
     />
   );
