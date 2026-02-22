@@ -82,6 +82,7 @@ export default function OfficePage() {
     { id: "main", x: 20, y: 30, desk: "Executive Desk", z: 0 },
     { id: "insight", x: 60, y: 30, desk: "Analytics Station", z: 0 },
     { id: "vibe", x: 40, y: 60, desk: "Creative Studio", z: 1 },
+    { id: "mission", x: 75, y: 55, desk: "Operations Center", z: 1 },
   ];
 
   return (
