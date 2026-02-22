@@ -54,6 +54,15 @@ export const initialize = mutation({
         avatar: "🎨",
         skills: ["content-creation", "design", "social-media"],
       },
+      {
+        agentId: "mission",
+        name: "MISSION",
+        role: "Operations",
+        status: "active",
+        lastActivity: Date.now(),
+        avatar: "📊",
+        skills: ["logging", "tracking", "documentation", "monitoring"],
+      },
     ];
     
     for (const agent of agents) {
@@ -61,6 +70,40 @@ export const initialize = mutation({
     }
     
     return { message: "Agents initialized", count: agents.length };
+  },
+});
+
+// Add a new agent
+export const addAgent = mutation({
+  args: {
+    agentId: v.string(),
+    name: v.string(),
+    role: v.string(),
+    avatar: v.string(),
+    skills: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Check if agent already exists
+    const existing = await ctx.db
+      .query("agents")
+      .withIndex("by_agentId", (q) => q.eq("agentId", args.agentId))
+      .first();
+    
+    if (existing) {
+      return { message: "Agent already exists", agentId: args.agentId };
+    }
+    
+    const agentId = await ctx.db.insert("agents", {
+      agentId: args.agentId,
+      name: args.name,
+      role: args.role,
+      status: "active",
+      lastActivity: Date.now(),
+      avatar: args.avatar,
+      skills: args.skills,
+    });
+    
+    return { message: "Agent added", agentId: args.agentId, id: agentId };
   },
 });
 

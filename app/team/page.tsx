@@ -8,8 +8,7 @@ export default function TeamPage() {
 
   // Get specific agents
   const apex = agents?.find(a => a.agentId === "main");
-  const insight = agents?.find(a => a.agentId === "insight");
-  const vibe = agents?.find(a => a.agentId === "vibe");
+  const teamMembers = agents?.filter(a => a.agentId !== "main") || [];
 
   return (
     <div className="p-8 min-h-screen">
@@ -20,7 +19,7 @@ export default function TeamPage() {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">Meet the Team</h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            3 AI agents, each with a new vibe and set of capabilities.
+            {agents?.length || 0} AI agents, each with a unique vibe and set of capabilities.
             <br />
             Together, they run your AI company with precision and creativity.
           </p>
@@ -48,26 +47,16 @@ export default function TeamPage() {
         </div>
 
         {/* Team Members Row */}
-        <div className="grid grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {insight && (
-            <div className="flex flex-col items-center">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {teamMembers.map((agent) => (
+            <div key={agent.agentId} className="flex flex-col items-center">
               <div className="w-0.5 h-12 bg-gradient-to-b from-gray-700/50 to-transparent mb-4" />
               <AgentCard
-                agent={insight}
-                skills={insight.skills || []}
+                agent={agent}
+                skills={agent.skills || []}
               />
             </div>
-          )}
-          
-          {vibe && (
-            <div className="flex flex-col items-center">
-              <div className="w-0.5 h-12 bg-gradient-to-b from-gray-700/50 to-transparent mb-4" />
-              <AgentCard
-                agent={vibe}
-                skills={vibe.skills || []}
-              />
-            </div>
-          )}
+          ))}
         </div>
 
         {/* Team Stats */}
@@ -86,7 +75,7 @@ export default function TeamPage() {
           />
           <StatBox
             icon="📊"
-            value={(apex?.skills?.length || 0) + (insight?.skills?.length || 0) + (vibe?.skills?.length || 0)}
+            value={agents?.reduce((total, agent) => total + (agent.skills?.length || 0), 0) || 0}
             label="Combined Skills"
             color="purple"
           />
@@ -120,6 +109,12 @@ function AgentCard({
     "content-creation": "bg-pink-900/40 text-pink-300 border-pink-700/50",
     "design": "bg-rose-900/40 text-rose-300 border-rose-700/50",
     "social-media": "bg-fuchsia-900/40 text-fuchsia-300 border-fuchsia-700/50",
+    
+    // MISSION skills
+    "logging": "bg-cyan-900/40 text-cyan-300 border-cyan-700/50",
+    "tracking": "bg-sky-900/40 text-sky-300 border-sky-700/50",
+    "documentation": "bg-blue-900/40 text-blue-300 border-blue-700/50",
+    "monitoring": "bg-slate-900/40 text-slate-300 border-slate-700/50",
   };
 
   return (

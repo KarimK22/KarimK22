@@ -37,6 +37,17 @@ export default function OfficePage() {
       currentTask: "Building Isometric Office V2",
       lastActivity: Date.now(),
       skills: ["Design", "Video", "Creative Direction"]
+    },
+    {
+      _id: "mission-001",
+      agentId: "mission",
+      name: "MISSION",
+      role: "Operations Officer",
+      avatar: "📊",
+      status: "active",
+      currentTask: "Monitoring & logging operations",
+      lastActivity: Date.now(),
+      skills: ["Logging", "Tracking", "Documentation", "Monitoring"]
     }
   ];
   
