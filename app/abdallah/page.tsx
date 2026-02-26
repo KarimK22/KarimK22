@@ -5,7 +5,7 @@ import { api } from "../../convex/_generated/api";
 import { useState } from "react";
 
 export default function AbdallahPage() {
-  const memories = useQuery(api.memories.getAll, {});
+  const memories = useQuery(api.memories.getRecent, { limit: 200 });
   const documents = useQuery(api.contentPipeline.getByStage, {});
 
   // Filter content related to Abdallah
