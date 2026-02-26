@@ -41,6 +41,7 @@ export default function RootLayout({
                 <NavLink href="/documents" icon="📄">Documents</NavLink>
                 <NavLink href="/office" icon="🏢">Office</NavLink>
                 <NavLink href="/team" icon="👥">Team</NavLink>
+                <NavLink href="/abdallah" icon="👤">Abdallah</NavLink>
               </div>
             </nav>
             
