@@ -412,8 +412,7 @@ export default function OfficePage() {
                   <div className="relative w-40 h-28 rounded-lg overflow-hidden mb-1"
                        style={{
                          background: 'linear-gradient(145deg, rgba(8,18,28,0.92) 0%, rgba(4,10,18,0.95) 100%)',
-                         border: `1.5px solid ${isWorking ? agent.color : '#b8a070'}`,
-                         borderOpacity: 0.6,
+                         border: `1.5px solid ${isWorking ? agent.color : '#b8a07099'}`,
                          boxShadow: isWorking
                            ? `0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(184,160,112,0.1), 0 0 20px ${agent.glowColor}40`
                            : '0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(184,160,112,0.1)',
