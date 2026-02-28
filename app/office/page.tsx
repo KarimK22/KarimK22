@@ -65,7 +65,7 @@ export default function OfficePage() {
 
   const [time, setTime] = useState(new Date());
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
-  const activityFeed: any[] = []; // pending Convex deploy to exuberant-mongoose-773
+  const activityFeed: any[] = []; // pending Convex deploy to outstanding-snail-503
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
