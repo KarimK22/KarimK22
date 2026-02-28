@@ -18,10 +18,11 @@ export default function Dashboard() {
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Team Status</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[...(agents || []), ...(!agents?.some(a => a.agentId === "mission") ? [{
+          {([...(agents || []), ...(!agents?.some((a: any) => a.agentId === "mission") ? [{
             _id: "mission-fallback", agentId: "mission", name: "MISSION",
             role: "Chief of Operations", status: "active", avatar: "📊",
-          }] : [])].map((agent) => (
+            currentTask: undefined, lastActivity: Date.now(), skills: [],
+          }] : [])] as any[]).map((agent: any) => (
             <div key={agent._id} className="bg-gray-900 rounded-lg p-6 border border-gray-800">
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-3xl">{agent.avatar}</span>
