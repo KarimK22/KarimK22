@@ -1,22 +1,8 @@
 "use client";
 
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import React from "react";
-
-// ── Error boundary to catch Convex "function not found" crashes ──
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode; fallback: React.ReactNode },
-  { hasError: boolean }
-> {
-  constructor(props: any) {
-    super(props);
-    this.state = { hasError: false };
-  }
-  static getDerivedStateFromError() { return { hasError: true }; }
-  render() {
-    if (this.state.hasError) return this.props.fallback;
-    return this.props.children;
-  }
-}
 
 const STATUS_COLORS = {
   critical: { bg: "bg-red-900/30", text: "text-red-400", border: "border-red-700/40" },
@@ -39,18 +25,30 @@ function getStatusLabel(rate: number) {
   return "🟢 Healthy";
 }
 
-function StakingContent() {
-  const metrics: any[] = []; // pending Convex deploy to outstanding-snail-503
+interface StakingEntry {
+  date: string;
+  starts: number;
+  completions: number;
+  completionRate: number;
+  notes?: string;
+  source?: string;
+}
 
-  const sorted = [...(metrics || [])].sort((a: any, b: any) => a.date.localeCompare(b.date));
-  const latest = sorted[sorted.length - 1] as any;
-  const prev = sorted[sorted.length - 2] as any;
+export default function StakingPage() {
+  // Use memories with type "staking-metric" — works with existing Convex deployment
+  const rawMemories = useQuery(api.memories.getRecent, { type: "staking-metric", limit: 60 });
 
-  const trend = latest && prev
-    ? latest.completionRate - prev.completionRate
-    : null;
+  const metrics: StakingEntry[] = (rawMemories || [])
+    .map((m: any) => {
+      try { return JSON.parse(m.content); } catch { return null; }
+    })
+    .filter(Boolean)
+    .sort((a: StakingEntry, b: StakingEntry) => a.date.localeCompare(b.date));
 
-  const maxRate = Math.max(...sorted.map((m: any) => m.completionRate), 1);
+  const latest = metrics[metrics.length - 1];
+  const prev = metrics[metrics.length - 2];
+  const trend = latest && prev ? latest.completionRate - prev.completionRate : null;
+  const maxRate = Math.max(...metrics.map(m => m.completionRate), 34);
 
   return (
     <div className="p-8 min-h-screen">
@@ -61,7 +59,10 @@ function StakingContent() {
           <p className="text-gray-400 mt-1">Completion rate over time · Baseline: 34%</p>
         </div>
         {latest && (
-          <div className={`px-4 py-2 rounded-xl border text-sm font-medium ${STATUS_COLORS[getStatus(latest.completionRate) as keyof typeof STATUS_COLORS].bg} ${STATUS_COLORS[getStatus(latest.completionRate) as keyof typeof STATUS_COLORS].text} ${STATUS_COLORS[getStatus(latest.completionRate) as keyof typeof STATUS_COLORS].border}`}>
+          <div className={`px-4 py-2 rounded-xl border text-sm font-medium
+            ${STATUS_COLORS[getStatus(latest.completionRate) as keyof typeof STATUS_COLORS].bg}
+            ${STATUS_COLORS[getStatus(latest.completionRate) as keyof typeof STATUS_COLORS].text}
+            ${STATUS_COLORS[getStatus(latest.completionRate) as keyof typeof STATUS_COLORS].border}`}>
             {getStatusLabel(latest.completionRate)}
           </div>
         )}
@@ -107,22 +108,21 @@ function StakingContent() {
       <div className="rounded-xl p-6 bg-gray-900/60 border border-gray-800/50 mb-8">
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">Completion Rate History</h2>
 
-        {sorted.length === 0 ? (
+        {metrics.length === 0 ? (
           <div className="text-center py-16 text-gray-600">
             <div className="text-4xl mb-3">📊</div>
             <p className="text-sm">No staking data yet.</p>
             <p className="text-xs mt-2 text-gray-700">
-              INSIGHT will populate this automatically from daily Mixpanel pulls.
+              INSIGHT logs staking data here daily via the memory API.
             </p>
           </div>
         ) : (
           <div className="space-y-3">
-            {sorted.map((m: any) => {
+            {metrics.map((m) => {
               const status = getStatus(m.completionRate);
-              const barWidth = Math.max((m.completionRate / Math.max(maxRate, 34)) * 100, 2);
-              const baselineWidth = (34 / Math.max(maxRate, 34)) * 100;
+              const barWidth = Math.max((m.completionRate / maxRate) * 100, 2);
+              const baselineWidth = (34 / maxRate) * 100;
               const colors = STATUS_COLORS[status as keyof typeof STATUS_COLORS];
-
               return (
                 <div key={m.date} className="flex items-center gap-4">
                   <span className="text-xs text-gray-500 w-20 shrink-0">{m.date}</span>
@@ -150,18 +150,18 @@ function StakingContent() {
       </div>
 
       {/* Raw Table */}
-      {sorted.length > 0 && (
+      {metrics.length > 0 && (
         <div className="rounded-xl bg-gray-900/60 border border-gray-800/50 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800/50">
                 {["Date","Starts","Completions","Rate","Status","Notes"].map(h => (
-                  <th key={h} className={`px-6 py-3 text-xs text-gray-500 uppercase tracking-wider ${h === "Date" || h === "Notes" ? "text-left" : "text-right"}`}>{h}</th>
+                  <th key={h} className={`px-6 py-3 text-xs text-gray-500 uppercase tracking-wider ${["Date","Notes"].includes(h) ? "text-left" : "text-right"}`}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {[...sorted].reverse().map((m: any, i: number) => {
+              {[...metrics].reverse().map((m, i) => {
                 const colors = STATUS_COLORS[getStatus(m.completionRate) as keyof typeof STATUS_COLORS];
                 return (
                   <tr key={m.date} className={`border-b border-gray-800/30 ${i % 2 === 0 ? "" : "bg-gray-800/10"}`}>
@@ -183,26 +183,5 @@ function StakingContent() {
         </div>
       )}
     </div>
-  );
-}
-
-const SetupFallback = () => (
-  <div className="p-8 min-h-screen flex flex-col items-center justify-center">
-    <div className="text-6xl mb-4">⛓️</div>
-    <h1 className="text-2xl font-bold text-white mb-2">Staking Metrics</h1>
-    <p className="text-gray-400 mb-6 text-center max-w-sm">
-      Backend table not deployed yet. Run this on your PC to activate:
-    </p>
-    <code className="bg-gray-900 border border-gray-700 px-4 py-2 rounded-lg text-green-400 text-sm">
-      npx convex dev --once
-    </code>
-  </div>
-);
-
-export default function StakingPage() {
-  return (
-    <ErrorBoundary fallback={<SetupFallback />}>
-      <StakingContent />
-    </ErrorBoundary>
   );
 }
