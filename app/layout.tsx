@@ -34,6 +34,9 @@ export default function RootLayout({
               
               <div className="space-y-2">
                 <NavLink href="/" icon="📊">Dashboard</NavLink>
+                <NavLink href="/analytics" icon="📈">Analytics</NavLink>
+                <NavLink href="/alerts" icon="🚨">Alerts</NavLink>
+                <NavLink href="/logs" icon="🗂️">Logs</NavLink>
                 <NavLink href="/memory" icon="🧠">Memory</NavLink>
                 <NavLink href="/calendar" icon="📅">Calendar</NavLink>
                 <NavLink href="/tasks" icon="✅">Tasks</NavLink>
