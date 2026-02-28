@@ -8,11 +8,13 @@
  * @module
  */
 
+import type * as activityLog from "../activityLog.js";
 import type * as agents from "../agents.js";
 import type * as calendar from "../calendar.js";
 import type * as contentPipeline from "../contentPipeline.js";
 import type * as http from "../http.js";
 import type * as memories from "../memories.js";
+import type * as stakingMetrics from "../stakingMetrics.js";
 import type * as tasks from "../tasks.js";
 
 import type {
@@ -22,11 +24,13 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  activityLog: typeof activityLog;
   agents: typeof agents;
   calendar: typeof calendar;
   contentPipeline: typeof contentPipeline;
   http: typeof http;
   memories: typeof memories;
+  stakingMetrics: typeof stakingMetrics;
   tasks: typeof tasks;
 }>;
 

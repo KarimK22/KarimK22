@@ -152,8 +152,7 @@ http.route({
   method: "POST",
   handler: httpAction(async (ctx, request) => {
     const body = await request.json();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const id = await ctx.runMutation((api as any).stakingMetrics.upsert, {
+    const id = await ctx.runMutation(api.stakingMetrics.upsert, {
       date: body.date,
       starts: body.starts,
       completions: body.completions,
@@ -173,8 +172,7 @@ http.route({
   method: "POST",
   handler: httpAction(async (ctx, request) => {
     const body = await request.json();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const id = await ctx.runMutation((api as any).activityLog.add, {
+    const id = await ctx.runMutation(api.activityLog.add, {
       agent: body.agent,
       action: body.action,
       description: body.description,

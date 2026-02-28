@@ -42,8 +42,7 @@ function getStatusLabel(rate: number) {
 }
 
 function StakingContent() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const metrics = useQuery((api as any).stakingMetrics?.getRecent ?? null, { limit: 30 });
+  const metrics = useQuery(api.stakingMetrics.getRecent, { limit: 30 });
 
   const sorted = [...(metrics || [])].sort((a: any, b: any) => a.date.localeCompare(b.date));
   const latest = sorted[sorted.length - 1] as any;
