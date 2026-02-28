@@ -79,10 +79,10 @@ function DAUTooltip({ active, payload, label }: any) {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function HeroCard({ label, value, sub, delta, icon, color }: {
+function HeroCard({ label, value, sub, delta, icon, color, unit = "pp" }: {
   label: string; value: string; sub?: string;
   delta?: { diff: number; up: boolean } | null;
-  icon: string; color: string;
+  icon: string; color: string; unit?: string;
 }) {
   return (
     <div className={`rounded-2xl p-6 border bg-gray-900/70 backdrop-blur-sm ${color}`}>
@@ -95,7 +95,7 @@ function HeroCard({ label, value, sub, delta, icon, color }: {
       {delta && (
         <div className={`flex items-center gap-1 mt-3 text-sm font-semibold ${delta.up ? "text-green-400" : "text-red-400"}`}>
           <span>{delta.up ? "▲" : "▼"}</span>
-          <span>{Math.abs(delta.diff).toFixed(1)}{typeof delta.diff === "number" && delta.diff < 10 ? "pp" : ""} vs yesterday</span>
+          <span>{Math.abs(delta.diff).toFixed(1)}{unit} vs yesterday</span>
         </div>
       )}
     </div>
@@ -141,7 +141,11 @@ export default function AnalyticsPage() {
     const days: DayData[] = sorted.map(date => ({
       date,
       label: fmt(date),
-      staking:     stakingMap[date] ? round1(stakingMap[date].completionRate * 100) : null,
+      staking:     stakingMap[date] ? (() => {
+        // Normalize: old backfill stored as % (34.1), new cron stores as decimal (0.355)
+        const raw = stakingMap[date].completionRate;
+        return round1(raw > 1 ? raw : raw * 100);
+      })() : null,
       starts:      stakingMap[date]?.starts ?? null,
       completions: stakingMap[date]?.completions ?? null,
       stakingNotes:stakingMap[date]?.notes,
@@ -193,6 +197,7 @@ export default function AnalyticsPage() {
           delta={dauDelta ? { diff: dauDelta.diff, up: dauDelta.up } : null}
           icon="👤"
           color="border-blue-800/50"
+          unit=" users"
         />
         <HeroCard
           label="Gap to Target"
