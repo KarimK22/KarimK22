@@ -17,7 +17,7 @@ export default function Dashboard() {
       {/* Agent Status */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Team Status</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {agents?.map((agent) => (
             <div key={agent._id} className="bg-gray-900 rounded-lg p-6 border border-gray-800">
               <div className="flex items-center gap-3 mb-2">

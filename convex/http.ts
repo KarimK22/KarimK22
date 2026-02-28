@@ -146,6 +146,44 @@ http.route({
   }),
 });
 
+// Log staking metrics
+http.route({
+  path: "/api/staking",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const body = await request.json();
+    const id = await ctx.runMutation(api.stakingMetrics.upsert, {
+      date: body.date,
+      starts: body.starts,
+      completions: body.completions,
+      completionRate: body.completionRate,
+      source: body.source || "mixpanel",
+      notes: body.notes,
+    });
+    return new Response(JSON.stringify({ success: true, id }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  }),
+});
+
+// Log activity feed entry
+http.route({
+  path: "/api/activity",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const body = await request.json();
+    const id = await ctx.runMutation(api.activityLog.add, {
+      agent: body.agent,
+      action: body.action,
+      description: body.description,
+      metadata: body.metadata,
+    });
+    return new Response(JSON.stringify({ success: true, id }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  }),
+});
+
 // Health check
 http.route({
   path: "/api/health",

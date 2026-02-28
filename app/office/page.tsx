@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export default function OfficePage() {
   const agents = [
@@ -64,6 +66,7 @@ export default function OfficePage() {
 
   const [time, setTime] = useState(new Date());
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const activityFeed = useQuery(api.activityLog.getRecent, { limit: 8 });
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -595,8 +598,31 @@ export default function OfficePage() {
             <span className="text-xl">📋</span>
             <span className="tracking-wide" style={{ color: '#e2d4b8' }}>Live Activity</span>
           </h3>
-          <div className="py-8 text-center" style={{ color: '#b8a07040', fontSize: '13px' }}>
-            Activity feed connected to Convex
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {activityFeed && activityFeed.length > 0 ? activityFeed.map((entry: any) => {
+              const agentColor: Record<string, string> = {
+                APEX: '#10b981', INSIGHT: '#3b82f6', VIBE: '#f59e0b', MISSION: '#06b6d4',
+              };
+              const color = agentColor[entry.agent] || '#b8a070';
+              return (
+                <div key={entry._id} className="flex items-start gap-2 px-2 py-1.5 rounded-lg"
+                     style={{ background: 'rgba(184,160,112,0.03)', border: '1px solid rgba(184,160,112,0.06)' }}>
+                  <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: color }} />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs font-medium" style={{ color }}>{entry.agent}</span>
+                    <span className="text-xs ml-1" style={{ color: '#b8a07080' }}>·</span>
+                    <span className="text-xs ml-1" style={{ color: '#c9b090' }}>{entry.description}</span>
+                  </div>
+                  <span className="text-xs shrink-0" style={{ color: '#b8a07040' }}>
+                    {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              );
+            }) : (
+              <div className="py-6 text-center text-xs" style={{ color: '#b8a07040' }}>
+                Activity will appear as agents work
+              </div>
+            )}
           </div>
         </div>
 

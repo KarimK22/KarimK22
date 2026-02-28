@@ -100,6 +100,18 @@ export default defineSchema({
     .index("by_agentId", ["agentId"])
     .index("by_status", ["status"]),
 
+  // Staking Metrics - daily tracking
+  stakingMetrics: defineTable({
+    date: v.string(), // "YYYY-MM-DD"
+    starts: v.number(),
+    completions: v.number(),
+    completionRate: v.number(), // percentage 0-100
+    source: v.optional(v.string()), // "mixpanel", "manual"
+    notes: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_date", ["date"]),
+
   // Activity Log - real-time feed
   activityLog: defineTable({
     timestamp: v.number(),
