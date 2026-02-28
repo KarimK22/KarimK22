@@ -125,6 +125,27 @@ http.route({
   }),
 });
 
+// Add agent
+http.route({
+  path: "/api/agents/add",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const body = await request.json();
+
+    const result = await ctx.runMutation(api.agents.addAgent, {
+      agentId: body.agentId,
+      name: body.name,
+      role: body.role,
+      avatar: body.avatar,
+      skills: body.skills,
+    });
+
+    return new Response(JSON.stringify({ success: true, ...result }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  }),
+});
+
 // Health check
 http.route({
   path: "/api/health",

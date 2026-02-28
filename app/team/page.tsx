@@ -47,7 +47,7 @@ export default function TeamPage() {
         </div>
 
         {/* Team Members Row */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-3 gap-8 max-w-5xl mx-auto">
           {teamMembers.map((agent) => (
             <div key={agent.agentId} className="flex flex-col items-center">
               <div className="w-0.5 h-12 bg-gradient-to-b from-gray-700/50 to-transparent mb-4" />
