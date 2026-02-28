@@ -112,8 +112,7 @@ function StakingContent() {
             <div className="text-4xl mb-3">📊</div>
             <p className="text-sm">No staking data yet.</p>
             <p className="text-xs mt-2 text-gray-700">
-              INSIGHT posts data here via <code className="bg-gray-800 px-1 rounded">/api/staking</code>
-              <br />or run <code className="bg-gray-800 px-1 rounded">npx convex dev --once</code> to enable the table.
+              INSIGHT will populate this automatically from daily Mixpanel pulls.
             </p>
           </div>
         ) : (
