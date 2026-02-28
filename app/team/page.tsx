@@ -8,7 +8,19 @@ export default function TeamPage() {
 
   // Get specific agents
   const apex = agents?.find(a => a.agentId === "main");
-  const teamMembers = agents?.filter(a => a.agentId !== "main") || [];
+
+  // Ensure MISSION always shows even if not yet in Convex DB
+  const missionInDb = agents?.some(a => a.agentId === "mission");
+  const missionFallback = {
+    _id: "mission-fallback", agentId: "mission", name: "MISSION",
+    role: "Chief of Operations", status: "active", avatar: "📊",
+    skills: ["logging", "tracking", "documentation", "monitoring"],
+    lastActivity: Date.now(),
+  };
+  const teamMembers = [
+    ...(agents?.filter(a => a.agentId !== "main") || []),
+    ...(missionInDb ? [] : [missionFallback]),
+  ];
 
   return (
     <div className="p-8 min-h-screen">
