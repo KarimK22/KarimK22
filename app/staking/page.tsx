@@ -1,7 +1,5 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import React from "react";
 
 // ── Error boundary to catch Convex "function not found" crashes ──
@@ -42,7 +40,7 @@ function getStatusLabel(rate: number) {
 }
 
 function StakingContent() {
-  const metrics = useQuery(api.stakingMetrics.getRecent, { limit: 30 });
+  const metrics: any[] = []; // pending Convex deploy to outstanding-snail-503
 
   const sorted = [...(metrics || [])].sort((a: any, b: any) => a.date.localeCompare(b.date));
   const latest = sorted[sorted.length - 1] as any;

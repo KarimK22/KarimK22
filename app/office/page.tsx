@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 
 
 export default function OfficePage() {
@@ -67,7 +65,7 @@ export default function OfficePage() {
 
   const [time, setTime] = useState(new Date());
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
-  const activityFeed = useQuery(api.activityLog.getRecent, { limit: 8 });
+  const activityFeed: any[] = []; // pending Convex deploy to outstanding-snail-503
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
