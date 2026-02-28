@@ -67,7 +67,7 @@ export default function OfficePage() {
   const [time, setTime] = useState(new Date());
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const activityFeed = useQuery((api as any).activityLog.getRecent, { limit: 8 });
+  const activityFeed = useQuery((api as any).activityLog?.getRecent ?? null, { limit: 8 });
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
