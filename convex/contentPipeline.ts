@@ -1,6 +1,18 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 
+// Get content by platform (e.g., "twitter")
+export const getByPlatform = query({
+  args: { platform: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("contentPipeline")
+      .withIndex("by_platform", (q) => q.eq("platform", args.platform))
+      .order("desc")
+      .collect();
+  },
+});
+
 // Get content by stage
 export const getByStage = query({
   args: { stage: v.optional(v.string()) },
