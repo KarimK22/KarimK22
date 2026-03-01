@@ -184,6 +184,19 @@ http.route({
   }),
 });
 
+// GET rejected twitter drafts (for scout learning loop)
+http.route({
+  path: "/api/twitter/feedback",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const allDraft = await ctx.runQuery(api.contentPipeline.getByStage, { stage: "draft" });
+    const twitterRejected = allDraft.filter((c: any) => c.platform === "twitter");
+    return new Response(JSON.stringify(twitterRejected), {
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+    });
+  }),
+});
+
 // Health check
 http.route({
   path: "/api/health",
