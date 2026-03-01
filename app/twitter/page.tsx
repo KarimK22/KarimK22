@@ -28,6 +28,62 @@ const STAGES = [
   },
 ];
 
+function RTPickCard({ item }: { item: any }) {
+  const lines = item.content?.split("\n") ?? [];
+  const get = (prefix: string) =>
+    lines.find((l: string) => l.startsWith(prefix))?.replace(prefix, "").trim() ?? "";
+  const account = get("Account:");
+  const action = get("Action:");
+  const author = get("Original:");
+  const url = get("URL:");
+  const preview = get("Preview:");
+  const qt = get("Quote tweet:");
+  const why = get("Why:");
+  const isQT = action === "quote_tweet";
+  const isFounder = account.includes("Adn4n");
+  const [copiedQt, setCopiedQt] = useState(false);
+
+  return (
+    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 hover:border-blue-600 transition-all">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${isFounder ? "bg-blue-900 text-blue-200" : "bg-purple-900 text-purple-200"}`}>
+            {isFounder ? "👤 @Adn4n_0" : "🐦 @lingocoins"}
+          </span>
+          <span className={`text-xs px-2 py-0.5 rounded-full ${isQT ? "bg-orange-900 text-orange-200" : "bg-teal-900 text-teal-200"}`}>
+            {isQT ? "💬 Quote Tweet" : "🔁 Retweet"}
+          </span>
+        </div>
+        <span className="text-xs text-gray-500 font-medium">{author}</span>
+      </div>
+      <div className="bg-gray-900 rounded-lg p-3 mb-3 border border-gray-700">
+        <p className="text-sm text-gray-300 leading-relaxed italic">"{preview}"</p>
+      </div>
+      {isQT && qt && (
+        <div className="bg-orange-900/20 border border-orange-800/50 rounded-lg p-3 mb-3">
+          <p className="text-xs text-orange-400 font-medium mb-1">Your quote:</p>
+          <p className="text-sm text-orange-100">{qt}</p>
+          <button
+            className="text-xs text-orange-400 hover:text-orange-300 mt-2 transition-colors"
+            onClick={() => { navigator.clipboard.writeText(qt); setCopiedQt(true); setTimeout(() => setCopiedQt(false), 2000); }}
+          >
+            {copiedQt ? "✓ Copied" : "Copy quote text"}
+          </button>
+        </div>
+      )}
+      {why && <p className="text-xs text-gray-500 mb-3">↳ {why}</p>}
+      {url && url.includes("x.com") ? (
+        <a href={url} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium">
+          🔗 Open on X →
+        </a>
+      ) : (
+        <p className="text-xs text-gray-600 italic">URL not captured for this pick</p>
+      )}
+    </div>
+  );
+}
+
 function DraftCard({ item }: { item: any }) {
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -141,15 +197,19 @@ export default function TwitterPage() {
   const allContent = useQuery(api.contentPipeline.getByStage, {});
   const content = allContent?.filter((c) => c.platform === "twitter");
 
+  // Separate tweet drafts from retweet picks (RT picks have "RT Pick" in title)
+  const drafts = content?.filter((c) => !c.title?.startsWith("RT Pick"));
+  const rtPicks = content?.filter((c) => c.title?.startsWith("RT Pick")) ?? [];
+
   const byStage = STAGES.map((stage) => ({
     ...stage,
-    items: content?.filter((c) => c.stage === stage.id) ?? [],
+    items: drafts?.filter((c) => c.stage === stage.id) ?? [],
   }));
 
-  const total = content?.length ?? 0;
-  const approved = content?.filter((c) => c.stage === "approved").length ?? 0;
-  const pending = content?.filter((c) => c.stage === "review").length ?? 0;
-  const rejected = content?.filter((c) => c.stage === "draft").length ?? 0;
+  const total = drafts?.length ?? 0;
+  const approved = drafts?.filter((c) => c.stage === "approved").length ?? 0;
+  const pending = drafts?.filter((c) => c.stage === "review").length ?? 0;
+  const rejected = drafts?.filter((c) => c.stage === "draft").length ?? 0;
 
   return (
     <div className="p-8">
@@ -224,6 +284,21 @@ export default function TwitterPage() {
           </div>
         ))}
       </div>
+
+      {/* Retweet Picks */}
+      {rtPicks.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-xl font-bold mb-4">🔁 Retweet Picks</h2>
+          <p className="text-sm text-gray-400 mb-4">
+            Real tweets found by the scout worth retweeting or quote-tweeting — click the link to open on X.
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            {rtPicks.map((item: any) => (
+              <RTPickCard key={item._id} item={item} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* How it works */}
       <div className="mt-8 bg-gray-900/50 rounded-xl p-6 border border-gray-800">
