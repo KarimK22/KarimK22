@@ -17,9 +17,21 @@ export default function TeamPage() {
     skills: ["logging", "tracking", "documentation", "monitoring"],
     lastActivity: Date.now(),
   };
+
+  // Ensure SCOUT always shows
+  const scoutInDb = agents?.some(a => a.agentId === "twitter-scout");
+  const scoutFallback = {
+    _id: "scout-fallback", agentId: "twitter-scout", name: "SCOUT",
+    role: "Twitter Intelligence & Content", status: "active", avatar: "🐦",
+    skills: ["x-search", "trend-analysis", "tweet-drafting", "retweet-picks", "ct-pulse", "feedback-learning"],
+    lastActivity: Date.now(),
+    currentTask: "Daily crypto CT scan + draft generation",
+  };
+
   const teamMembers = [
     ...(agents?.filter(a => a.agentId !== "main") || []),
     ...(missionInDb ? [] : [missionFallback]),
+    ...(scoutInDb ? [] : [scoutFallback]),
   ];
 
   return (
@@ -59,7 +71,7 @@ export default function TeamPage() {
         </div>
 
         {/* Team Members Row */}
-        <div className="grid grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-4 gap-6 max-w-6xl mx-auto">
           {teamMembers.map((agent) => (
             <div key={agent.agentId} className="flex flex-col items-center">
               <div className="w-0.5 h-12 bg-gradient-to-b from-gray-700/50 to-transparent mb-4" />
@@ -127,6 +139,14 @@ function AgentCard({
     "tracking": "bg-sky-900/40 text-sky-300 border-sky-700/50",
     "documentation": "bg-blue-900/40 text-blue-300 border-blue-700/50",
     "monitoring": "bg-slate-900/40 text-slate-300 border-slate-700/50",
+
+    // SCOUT skills
+    "x-search": "bg-sky-900/40 text-sky-300 border-sky-700/50",
+    "trend-analysis": "bg-yellow-900/40 text-yellow-300 border-yellow-700/50",
+    "tweet-drafting": "bg-blue-900/40 text-blue-200 border-blue-700/50",
+    "retweet-picks": "bg-teal-900/40 text-teal-300 border-teal-700/50",
+    "ct-pulse": "bg-violet-900/40 text-violet-300 border-violet-700/50",
+    "feedback-learning": "bg-emerald-900/40 text-emerald-300 border-emerald-700/50",
   };
 
   return (
