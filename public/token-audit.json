@@ -1,5 +1,7 @@
 {
-  "generatedAt": "2026-03-07T17:38:23.067395Z",
+  "generatedAt": "2026-03-07T17:44:38.158459+00:00",
+  "periodStart": "2026-03-07",
+  "nextReset": "2026-04-07",
   "agentsContext": {
     "APEX (main)": {
       "files": [
@@ -1861,6 +1863,13 @@
         "modified": "2026-02-23 09:25"
       },
       {
+        "file": "54e7bf89-32e0-49d4-9c7a-2b312bde08a9.jsonl",
+        "bytes": 555887,
+        "kb": 542.9,
+        "mb": 0.53,
+        "modified": "2026-03-07 17:44"
+      },
+      {
         "file": "d7ca7750-1b52-427d-a62e-b82762a90947.jsonl",
         "bytes": 519291,
         "kb": 507.1,
@@ -1880,13 +1889,6 @@
         "kb": 504.9,
         "mb": 0.49,
         "modified": "2026-02-27 03:14"
-      },
-      {
-        "file": "54e7bf89-32e0-49d4-9c7a-2b312bde08a9.jsonl",
-        "bytes": 496322,
-        "kb": 484.7,
-        "mb": 0.47,
-        "modified": "2026-03-07 17:38"
       },
       {
         "file": "6cde0329-ae31-4a52-ac6a-fa962fada258.jsonl",
@@ -2106,18 +2108,11 @@
         "modified": "2026-03-06 03:13"
       },
       {
-        "file": "b233510e-9369-433a-b3a9-57c748df1fc0.jsonl",
-        "bytes": 12897,
-        "kb": 12.6,
-        "mb": 0.01,
-        "modified": "2026-03-07 16:45"
-      },
-      {
         "file": "6e069a4d-58d8-4c78-af10-d4782b7c37e3.jsonl",
         "bytes": 12766,
         "kb": 12.5,
         "mb": 0.01,
-        "modified": "2026-03-07 16:38"
+        "modified": "2026-03-07 17:40"
       },
       {
         "file": "6c5bb9c6-cff9-4f28-82e5-1129fd6b82ba.jsonl",
@@ -2601,6 +2596,14 @@
       "name": "MISSION Monitoring",
       "schedule": "every 1d",
       "agent": "main",
+      "status": "ok",
+      "target": "isolated"
+    },
+    {
+      "id": "monthly-reset",
+      "name": "Monthly Token Reset",
+      "schedule": "0 9 7 * * UTC",
+      "agent": "mission",
       "status": "ok",
       "target": "isolated"
     }
