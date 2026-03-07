@@ -48,6 +48,7 @@ export default function RootLayout({
                 <NavLink href="/office" icon="🏢">Office</NavLink>
                 <NavLink href="/pixel-office" icon="🕹️">Pixel Office</NavLink>
                 <NavLink href="/team" icon="👥">Team</NavLink>
+                <NavLink href="/tokens" icon="⚡">Token Usage</NavLink>
 
               </div>
             </nav>
