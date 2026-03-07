@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-03-07T17:59:14.906505+00:00",
+  "generatedAt": "2026-03-07T23:00:05.466474+00:00",
   "periodStart": "2026-03-07",
   "nextReset": "2026-04-07",
   "periodTotals": {
-    "inputTokens": 788,
-    "outputTokens": 121599,
-    "cacheRead": 13165964,
-    "cacheWrite": 2853314,
-    "totalTokens": 16141665,
-    "cost": 13.3704,
-    "turns": 259
+    "inputTokens": 795,
+    "outputTokens": 122454,
+    "cacheRead": 13645640,
+    "cacheWrite": 3007919,
+    "totalTokens": 16776808,
+    "cost": 14.107,
+    "turns": 264
   },
   "agentSummaries": {
     "APEX": {
-      "inputTokens": 182,
-      "outputTokens": 65212,
-      "cacheRead": 9935956,
-      "cacheWrite": 1778894,
-      "totalTokens": 11780244,
-      "cost": 10.6304,
-      "turns": 141,
+      "inputTokens": 189,
+      "outputTokens": 66067,
+      "cacheRead": 10415632,
+      "cacheWrite": 1933499,
+      "totalTokens": 12415387,
+      "cost": 11.3669,
+      "turns": 146,
       "models": {
-        "claude-sonnet-4-6": 125,
+        "claude-sonnet-4-6": 130,
         "delivery-mirror": 16
       }
     },
@@ -189,8 +189,8 @@
       "date": "2026-03-07",
       "agents": {
         "APEX": {
-          "tokens": 11780244,
-          "cost": 10.6304
+          "tokens": 12415387,
+          "cost": 11.3669
         },
         "INSIGHT": {
           "tokens": 740443,
@@ -209,22 +209,22 @@
           "cost": 0.4494
         }
       },
-      "total": 16141665,
-      "cost": 13.3704
+      "total": 16776808,
+      "cost": 14.107
     }
   ],
   "dailyBreakdown": {
     "APEX": {
       "2026-03-07": {
-        "inputTokens": 182,
-        "outputTokens": 65212,
-        "cacheRead": 9935956,
-        "cacheWrite": 1778894,
-        "totalTokens": 11780244,
-        "cost": 10.6303653,
-        "turns": 141,
+        "inputTokens": 189,
+        "outputTokens": 66067,
+        "cacheRead": 10415632,
+        "cacheWrite": 1933499,
+        "totalTokens": 12415387,
+        "cost": 11.36688285,
+        "turns": 146,
         "models": {
-          "claude-sonnet-4-6": 125,
+          "claude-sonnet-4-6": 130,
           "delivery-mirror": 16
         }
       }
