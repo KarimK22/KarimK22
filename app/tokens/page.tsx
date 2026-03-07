@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface FileEntry {
   name: string;
@@ -41,6 +42,33 @@ interface AuditData {
   crons: CronJob[];
 }
 
+interface AgentSummary {
+  inputTokens: number;
+  outputTokens: number;
+  cacheRead: number;
+  cacheWrite: number;
+  totalTokens: number;
+  cost: number;
+  turns: number;
+  models: Record<string, number>;
+}
+
+interface ChartDay {
+  date: string;
+  agents: Record<string, { tokens: number; cost: number }>;
+  total: number;
+  cost: number;
+}
+
+interface UsageData {
+  generatedAt: string;
+  periodStart: string;
+  nextReset: string;
+  periodTotals: AgentSummary;
+  agentSummaries: Record<string, AgentSummary>;
+  chartDays: ChartDay[];
+}
+
 function TokenBar({ tokens, max }: { tokens: number; max: number }) {
   const pct = Math.min((tokens / max) * 100, 100);
   const color = pct > 75 ? "bg-red-500" : pct > 40 ? "bg-yellow-500" : "bg-emerald-500";
@@ -66,15 +94,20 @@ function SessionHealth({ mb }: { mb: number }) {
 
 export default function TokensPage() {
   const [data, setData] = useState<AuditData | null>(null);
-  const [activeTab, setActiveTab] = useState<"boot" | "browser" | "sessions" | "crons">("boot");
+  const [usage, setUsage] = useState<UsageData | null>(null);
+  const [activeTab, setActiveTab] = useState<"usage" | "boot" | "browser" | "sessions" | "crons">("usage");
   const [expandedFolder, setExpandedFolder] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/token-audit.json")
-      .then((r) => r.json())
-      .then((d) => { setData(d); setLoading(false); })
-      .catch(() => setLoading(false));
+    Promise.all([
+      fetch("/token-audit.json").then(r => r.json()).catch(() => null),
+      fetch("/daily_usage.json").then(r => r.json()).catch(() => null),
+    ]).then(([audit, usageData]) => {
+      setData(audit);
+      setUsage(usageData);
+      setLoading(false);
+    });
   }, []);
 
   if (loading) return (
@@ -121,6 +154,7 @@ export default function TokensPage() {
       {/* Tabs */}
       <div className="flex gap-2 mb-6 border-b border-gray-800">
         {[
+          { key: "usage", label: "📊 Usage & Cost", desc: "Real token consumption" },
           { key: "boot", label: "🚀 Boot Context", desc: "Files loaded on session start" },
           { key: "browser", label: "📁 File Browser", desc: "All .md files by workspace" },
           { key: "sessions", label: "💾 Sessions", desc: "Active session sizes" },
@@ -139,6 +173,141 @@ export default function TokensPage() {
           </button>
         ))}
       </div>
+
+      {/* Usage & Cost Tab */}
+      {activeTab === "usage" && usage && (
+        <div className="space-y-6">
+          {/* Period banner */}
+          <div className="bg-gray-900/80 border border-gray-700 rounded-xl p-4 flex items-center justify-between">
+            <div>
+              <div className="text-xs text-gray-400 mb-1">Current billing period</div>
+              <div className="text-white font-semibold">{usage.periodStart} → {usage.nextReset}</div>
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-gray-400 mb-1">Updated daily at 01:00 CET</div>
+              <div className="text-xs text-gray-500">Last run: {new Date(usage.generatedAt).toLocaleString()}</div>
+            </div>
+          </div>
+
+          {/* Period totals */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { label: "Total Tokens", value: usage.periodTotals.totalTokens.toLocaleString(), sub: "this period", color: "text-white" },
+              { label: "Total Cost", value: `$${usage.periodTotals.cost.toFixed(4)}`, sub: "this period", color: "text-emerald-400" },
+              { label: "API Turns", value: usage.periodTotals.turns.toLocaleString(), sub: "requests made", color: "text-blue-400" },
+              { label: "Cache Read", value: usage.periodTotals.cacheRead.toLocaleString(), sub: "tokens (cheaper)", color: "text-purple-400" },
+            ].map((card) => (
+              <div key={card.label} className="bg-gray-900/80 border border-gray-700 rounded-xl p-4">
+                <div className="text-xs text-gray-400 mb-1">{card.label}</div>
+                <div className={`text-2xl font-bold ${card.color}`}>{card.value}</div>
+                <div className="text-xs text-gray-500 mt-1">{card.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Last 5 days chart */}
+          <div className="bg-gray-900/80 border border-gray-700 rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-gray-300 mb-4">Daily Token Usage — Last 5 Days</h3>
+            <div className="space-y-3">
+              {usage.chartDays.map((day) => {
+                const maxDay = Math.max(...usage.chartDays.map(d => d.total), 1);
+                const pct = (day.total / maxDay) * 100;
+                return (
+                  <div key={day.date}>
+                    <div className="flex justify-between text-xs text-gray-400 mb-1">
+                      <span>{day.date}</span>
+                      <span>{day.total.toLocaleString()} tokens · <span className="text-emerald-400">${day.cost.toFixed(4)}</span></span>
+                    </div>
+                    <div className="w-full bg-gray-800 rounded-full h-3 flex overflow-hidden">
+                      {Object.entries(day.agents).map(([agent, stats], i) => {
+                        const agentPct = day.total > 0 ? (stats.tokens / day.total) * pct : 0;
+                        const colors = ["bg-blue-500", "bg-purple-500", "bg-pink-500", "bg-orange-500"];
+                        return agentPct > 0 ? (
+                          <div key={agent} title={`${agent}: ${stats.tokens.toLocaleString()}`}
+                            className={`${colors[i % colors.length]} h-3 transition-all`}
+                            style={{ width: `${agentPct}%` }} />
+                        ) : null;
+                      })}
+                    </div>
+                    <div className="flex gap-3 mt-1">
+                      {Object.entries(day.agents).map(([agent, stats], i) => {
+                        const colors = ["text-blue-400", "text-purple-400", "text-pink-400", "text-orange-400"];
+                        return stats.tokens > 0 ? (
+                          <span key={agent} className={`text-xs ${colors[i % colors.length]}`}>
+                            {agent}: {stats.tokens.toLocaleString()}
+                          </span>
+                        ) : null;
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Per-agent breakdown */}
+          <div className="bg-gray-900/80 border border-gray-700 rounded-xl overflow-hidden">
+            <div className="p-4 border-b border-gray-800">
+              <h3 className="text-sm font-semibold text-gray-300">Per-Agent Breakdown — Period Total</h3>
+            </div>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-gray-500 text-xs border-b border-gray-800">
+                  <th className="text-left px-4 py-2">Agent</th>
+                  <th className="text-right px-4 py-2">Total Tokens</th>
+                  <th className="text-right px-4 py-2">Input</th>
+                  <th className="text-right px-4 py-2">Output</th>
+                  <th className="text-right px-4 py-2">Cache Read</th>
+                  <th className="text-right px-4 py-2">Turns</th>
+                  <th className="text-right px-4 py-2">Cost</th>
+                  <th className="px-4 py-2 w-32">Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(usage.agentSummaries).map(([agent, s]) => {
+                  const share = usage.periodTotals.totalTokens > 0
+                    ? (s.totalTokens / usage.periodTotals.totalTokens) * 100 : 0;
+                  return (
+                    <tr key={agent} className="border-b border-gray-800/50 hover:bg-gray-800/30">
+                      <td className="px-4 py-3 text-white font-semibold">{agent}</td>
+                      <td className="px-4 py-3 text-right font-bold text-white">{s.totalTokens.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-right text-gray-400">{s.inputTokens.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-right text-gray-400">{s.outputTokens.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-right text-purple-400">{s.cacheRead.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-right text-gray-400">{s.turns}</td>
+                      <td className="px-4 py-3 text-right text-emerald-400 font-semibold">${s.cost.toFixed(4)}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 bg-gray-800 rounded-full h-1.5">
+                            <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${share}%` }} />
+                          </div>
+                          <span className="text-xs text-gray-400 w-10 text-right">{share.toFixed(1)}%</span>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot>
+                <tr className="bg-gray-800/40">
+                  <td className="px-4 py-2 text-gray-300 font-semibold">Total</td>
+                  <td className="px-4 py-2 text-right font-bold text-white">{usage.periodTotals.totalTokens.toLocaleString()}</td>
+                  <td colSpan={4} />
+                  <td className="px-4 py-2 text-right font-bold text-emerald-400">${usage.periodTotals.cost.toFixed(4)}</td>
+                  <td />
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "usage" && !usage && (
+        <div className="bg-gray-900/80 border border-gray-700 rounded-xl p-8 text-center text-gray-400">
+          <div className="text-4xl mb-4">📊</div>
+          <div>No usage data yet. The cron runs daily at 01:00 CET.</div>
+        </div>
+      )}
 
       {/* Boot Context Tab */}
       {activeTab === "boot" && (
