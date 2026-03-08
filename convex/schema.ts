@@ -112,6 +112,25 @@ export default defineSchema({
   })
     .index("by_date", ["date"]),
 
+  // Token Usage - daily snapshots per agent, accumulated monthly
+  tokenUsage: defineTable({
+    date: v.string(),           // "YYYY-MM-DD"
+    periodStart: v.string(),    // "YYYY-MM-DD" — billing/reset period start
+    agent: v.string(),          // "APEX", "INSIGHT", "VIBE", "MISSION", "SCOUT", "ALL"
+    inputTokens: v.number(),
+    outputTokens: v.number(),
+    cacheRead: v.number(),
+    cacheWrite: v.number(),
+    totalTokens: v.number(),
+    cost: v.number(),           // USD
+    turns: v.number(),
+    updatedAt: v.number(),      // epoch ms — allows upsert by overwriting
+  })
+    .index("by_date", ["date"])
+    .index("by_agent", ["agent"])
+    .index("by_period", ["periodStart"])
+    .index("by_date_agent", ["date", "agent"]),
+
   // Activity Log - real-time feed
   activityLog: defineTable({
     timestamp: v.number(),

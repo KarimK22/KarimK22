@@ -2,6 +2,7 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { api } from "./_generated/api";
 
+
 const http = httpRouter();
 
 // Add memory from OpenClaw
@@ -193,6 +194,37 @@ http.route({
     const twitterRejected = allDraft.filter((c: any) => c.platform === "twitter");
     return new Response(JSON.stringify(twitterRejected), {
       headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+    });
+  }),
+});
+
+// Upsert daily token usage snapshot (called by daily_usage.py at 1am CET)
+http.route({
+  path: "/api/tokens",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const body = await request.json();
+    // body.snapshots = [{ date, periodStart, agent, inputTokens, outputTokens,
+    //                     cacheRead, cacheWrite, totalTokens, cost, turns }, ...]
+    const snapshots: any[] = body.snapshots || [];
+    const ids: string[] = [];
+    for (const snap of snapshots) {
+      const id = await ctx.runMutation(api.tokenUsage.upsert, {
+        date: snap.date,
+        periodStart: snap.periodStart,
+        agent: snap.agent,
+        inputTokens: snap.inputTokens ?? 0,
+        outputTokens: snap.outputTokens ?? 0,
+        cacheRead: snap.cacheRead ?? 0,
+        cacheWrite: snap.cacheWrite ?? 0,
+        totalTokens: snap.totalTokens ?? 0,
+        cost: snap.cost ?? 0,
+        turns: snap.turns ?? 0,
+      });
+      ids.push(id as string);
+    }
+    return new Response(JSON.stringify({ success: true, count: ids.length, ids }), {
+      headers: { "Content-Type": "application/json" },
     });
   }),
 });
