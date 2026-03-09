@@ -16,6 +16,7 @@ import type * as http from "../http.js";
 import type * as memories from "../memories.js";
 import type * as stakingMetrics from "../stakingMetrics.js";
 import type * as tasks from "../tasks.js";
+import type * as tokenUsage from "../tokenUsage.js";
 
 import type {
   ApiFromModules,
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   memories: typeof memories;
   stakingMetrics: typeof stakingMetrics;
   tasks: typeof tasks;
+  tokenUsage: typeof tokenUsage;
 }>;
 
 /**
