@@ -1,41 +1,41 @@
 {
-  "generatedAt": "2026-03-08T23:00:03.049662+00:00",
+  "generatedAt": "2026-03-09T23:00:06.014317+00:00",
   "periodStart": "2026-03-07",
   "nextReset": "2026-04-07",
   "periodTotals": {
-    "inputTokens": 812,
-    "outputTokens": 157313,
-    "cacheRead": 18588529,
-    "cacheWrite": 3400575,
-    "totalTokens": 22147229,
-    "cost": 17.7207,
-    "turns": 405
+    "inputTokens": 1220,
+    "outputTokens": 177869,
+    "cacheRead": 22382471,
+    "cacheWrite": 4877129,
+    "totalTokens": 27438689,
+    "cost": 24.046,
+    "turns": 601
   },
   "agentSummaries": {
     "APEX": {
-      "inputTokens": 379,
-      "outputTokens": 115400,
-      "cacheRead": 16128658,
-      "cacheWrite": 2380545,
-      "totalTokens": 18624982,
-      "cost": 15.4978,
-      "turns": 327,
+      "inputTokens": 508,
+      "outputTokens": 125622,
+      "cacheRead": 19050238,
+      "cacheWrite": 3704629,
+      "totalTokens": 22880997,
+      "cost": 21.4933,
+      "turns": 480,
       "models": {
-        "claude-sonnet-4-6": 285,
-        "delivery-mirror": 42
+        "claude-sonnet-4-6": 421,
+        "delivery-mirror": 59
       }
     },
     "INSIGHT": {
-      "inputTokens": 220,
-      "outputTokens": 8199,
-      "cacheRead": 408313,
-      "cacheWrite": 62588,
-      "totalTokens": 479320,
-      "cost": 0.1603,
-      "turns": 27,
+      "inputTokens": 499,
+      "outputTokens": 18533,
+      "cacheRead": 1280675,
+      "cacheWrite": 215058,
+      "totalTokens": 1514765,
+      "cost": 0.4901,
+      "turns": 66,
       "models": {
-        "claude-haiku-4-5": 25,
-        "delivery-mirror": 2
+        "delivery-mirror": 3,
+        "claude-haiku-4-5": 63
       }
     },
     "VIBE": {
@@ -45,9 +45,9 @@
       "cacheWrite": 46193,
       "totalTokens": 1057500,
       "cost": 0.7379,
-      "turns": 36,
+      "turns": 40,
       "models": {
-        "claude-sonnet-4-6": 33,
+        "claude-sonnet-4-6": 37,
         "delivery-mirror": 3
       }
     },
@@ -75,33 +75,6 @@
     }
   },
   "chartDays": [
-    {
-      "date": "2026-03-04",
-      "agents": {
-        "APEX": {
-          "tokens": 0,
-          "cost": 0.0
-        },
-        "INSIGHT": {
-          "tokens": 0,
-          "cost": 0.0
-        },
-        "VIBE": {
-          "tokens": 0,
-          "cost": 0.0
-        },
-        "MISSION": {
-          "tokens": 0,
-          "cost": 0.0
-        },
-        "SCOUT": {
-          "tokens": 0,
-          "cost": 0.0
-        }
-      },
-      "total": 0,
-      "cost": 0.0
-    },
     {
       "date": "2026-03-05",
       "agents": {
@@ -160,8 +133,8 @@
       "date": "2026-03-07",
       "agents": {
         "APEX": {
-          "tokens": 12335154,
-          "cost": 11.2502
+          "tokens": 12300961,
+          "cost": 11.1758
         },
         "INSIGHT": {
           "tokens": 89533,
@@ -180,19 +153,19 @@
           "cost": 0.0
         }
       },
-      "total": 15467614,
-      "cost": 13.3776
+      "total": 15433421,
+      "cost": 13.3032
     },
     {
       "date": "2026-03-08",
       "agents": {
         "APEX": {
-          "tokens": 6289828,
-          "cost": 4.2476
+          "tokens": 5261235,
+          "cost": 3.2704
         },
         "INSIGHT": {
-          "tokens": 389787,
-          "cost": 0.0956
+          "tokens": 0,
+          "cost": 0.0
         },
         "VIBE": {
           "tokens": 0,
@@ -207,51 +180,91 @@
           "cost": 0.0
         }
       },
-      "total": 6679615,
-      "cost": 4.3432
+      "total": 5261235,
+      "cost": 3.2704
+    },
+    {
+      "date": "2026-03-09",
+      "agents": {
+        "APEX": {
+          "tokens": 5318801,
+          "cost": 7.047
+        },
+        "INSIGHT": {
+          "tokens": 1425232,
+          "cost": 0.4254
+        },
+        "VIBE": {
+          "tokens": 0,
+          "cost": 0.0
+        },
+        "MISSION": {
+          "tokens": 0,
+          "cost": 0.0
+        },
+        "SCOUT": {
+          "tokens": 0,
+          "cost": 0.0
+        }
+      },
+      "total": 6744033,
+      "cost": 7.4724
     }
   ],
   "dailyBreakdown": {
     "APEX": {
-      "2026-03-08": {
-        "inputTokens": 199,
-        "outputTokens": 49869,
-        "cacheRead": 5768160,
-        "cacheWrite": 471600,
-        "totalTokens": 6289828,
-        "cost": 4.247579999999999,
-        "turns": 187,
+      "2026-03-09": {
+        "inputTokens": 174,
+        "outputTokens": 28784,
+        "cacheRead": 3832514,
+        "cacheWrite": 1457329,
+        "totalTokens": 5318801,
+        "cost": 7.047019949999999,
+        "turns": 188,
         "models": {
-          "claude-sonnet-4-6": 161,
+          "claude-sonnet-4-6": 171,
+          "delivery-mirror": 17
+        }
+      },
+      "2026-03-08": {
+        "inputTokens": 158,
+        "outputTokens": 31654,
+        "cacheRead": 4873963,
+        "cacheWrite": 355460,
+        "totalTokens": 5261235,
+        "cost": 3.2704478999999984,
+        "turns": 154,
+        "models": {
+          "claude-sonnet-4-6": 128,
           "delivery-mirror": 26
         }
       },
       "2026-03-07": {
-        "inputTokens": 180,
-        "outputTokens": 65531,
-        "cacheRead": 10360498,
-        "cacheWrite": 1908945,
-        "totalTokens": 12335154,
-        "cost": 11.250198150000001,
-        "turns": 140,
+        "inputTokens": 176,
+        "outputTokens": 65184,
+        "cacheRead": 10343761,
+        "cacheWrite": 1891840,
+        "totalTokens": 12300961,
+        "cost": 11.175816300000001,
+        "turns": 138,
         "models": {
-          "claude-sonnet-4-6": 124,
+          "claude-sonnet-4-6": 122,
           "delivery-mirror": 16
         }
       }
     },
     "INSIGHT": {
-      "2026-03-08": {
-        "inputTokens": 170,
-        "outputTokens": 5046,
-        "cacheRead": 356976,
-        "cacheWrite": 27595,
-        "totalTokens": 389787,
-        "cost": 0.09559135,
-        "turns": 21,
+      "2026-03-09": {
+        "inputTokens": 449,
+        "outputTokens": 15380,
+        "cacheRead": 1229338,
+        "cacheWrite": 180065,
+        "totalTokens": 1425232,
+        "cost": 0.42536405,
+        "turns": 59,
         "models": {
-          "claude-haiku-4-5": 20,
-          "delivery-mirror": 1
+          "delivery-mirror": 1,
+          "claude-haiku-4-5": 58
         }
       },
       "2026-03-07": {
@@ -265,6 +278,18 @@
         "models": {
           "delivery-mirror": 1,
           "claude-haiku-4-5": 5
+        }
+      },
+      "2026-03-08": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "totalTokens": 0,
+        "cost": 0.0,
+        "turns": 1,
+        "models": {
+          "delivery-mirror": 1
         }
       }
     },
@@ -280,6 +305,18 @@
         "models": {
           "claude-sonnet-4-6": 33,
           "delivery-mirror": 3
+        }
+      },
+      "2026-03-09": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "totalTokens": 0,
+        "cost": 0.0,
+        "turns": 4,
+        "models": {
+          "claude-sonnet-4-6": 4
         }
       }
     },
