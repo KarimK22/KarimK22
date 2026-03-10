@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
-
 export default function OfficePage() {
   const agents = [
     {
@@ -17,22 +16,33 @@ export default function OfficePage() {
       currentTask: "Strategic planning & coordination",
       lastActivity: Date.now(),
       color: "#10b981",
-      glowColor: "rgba(16, 185, 129, 0.5)",
-      deskItem: "📱",
+      glowColor: "rgba(16, 185, 129, 0.4)",
+      screenType: "executive",
+    },
+    {
+      _id: "forge-001",
+      agentId: "forge",
+      name: "FORGE",
+      role: "Agent Improvement",
+      avatar: "🔨",
+      status: "idle",
+      currentTask: "Sunday 23:00 CET weekly cycle",
+      lastActivity: Date.now(),
+      color: "#f97316",
+      glowColor: "rgba(249, 115, 22, 0.4)",
       screenType: "executive",
     },
     {
       _id: "insight-001",
       agentId: "insight",
       name: "INSIGHT",
-      role: "Chief Marketing & Analytics Officer",
+      role: "Marketing Analytics",
       avatar: "👁️",
       status: "working",
       currentTask: "Analyzing user metrics & trends",
       lastActivity: Date.now(),
       color: "#3b82f6",
-      glowColor: "rgba(59, 130, 246, 0.5)",
-      deskItem: "📊",
+      glowColor: "rgba(59, 130, 246, 0.4)",
       screenType: "analytics",
     },
     {
@@ -42,11 +52,10 @@ export default function OfficePage() {
       role: "Chief Creative Officer",
       avatar: "🎨",
       status: "working",
-      currentTask: "Designing luxury office upgrade",
+      currentTask: "Office redesign & brand assets",
       lastActivity: Date.now(),
       color: "#f59e0b",
-      glowColor: "rgba(245, 158, 11, 0.5)",
-      deskItem: "🎨",
+      glowColor: "rgba(245, 158, 11, 0.4)",
       screenType: "creative",
     },
     {
@@ -56,40 +65,24 @@ export default function OfficePage() {
       role: "Chief of Operations",
       avatar: "📊",
       status: "working",
-      currentTask: "Monitoring systems & operations",
+      currentTask: "Monitoring systems & ops",
       lastActivity: Date.now(),
       color: "#06b6d4",
-      glowColor: "rgba(6, 182, 212, 0.5)",
-      deskItem: "🖥️",
+      glowColor: "rgba(6, 182, 212, 0.4)",
       screenType: "monitoring",
     },
     {
       _id: "scout-001",
       agentId: "scout",
       name: "SCOUT",
-      role: "Head of Growth & Distribution",
+      role: "Head of Growth",
       avatar: "🦅",
       status: "working",
-      currentTask: "Daily Twitter intel & draft generation",
+      currentTask: "Daily Twitter intel & drafts",
       lastActivity: Date.now(),
       color: "#8b5cf6",
-      glowColor: "rgba(139, 92, 246, 0.5)",
-      deskItem: "🐦",
+      glowColor: "rgba(139, 92, 246, 0.4)",
       screenType: "monitoring",
-    },
-    {
-      _id: "forge-001",
-      agentId: "forge",
-      name: "FORGE",
-      role: "Agent Improvement Engine",
-      avatar: "🔨",
-      status: "idle",
-      currentTask: "Sunday 23:00 CET weekly cycle",
-      lastActivity: Date.now(),
-      color: "#f97316",
-      glowColor: "rgba(249, 115, 22, 0.5)",
-      deskItem: "⚙️",
-      screenType: "executive",
     },
   ];
 
@@ -106,512 +99,451 @@ export default function OfficePage() {
   const isDaytime = hour >= 6 && hour < 18;
   const isEvening = hour >= 18 && hour < 22;
 
-  // Diamond layout — APEX top, MISSION left, INSIGHT right, VIBE bottom
+  // 3-row startup office layout
+  // Row 1: APEX (CEO, center — slightly bigger desk)
+  // Row 2: FORGE (left), INSIGHT (center), VIBE (right)
+  // Row 3: MISSION (left), SCOUT (right)
   const officeLayout = [
-    { id: "main",    x: 42, y: 14,  desk: "Executive Suite",    z: 2 },
-    { id: "mission", x: 13, y: 50,  desk: "Command Center",     z: 1 },
-    { id: "insight", x: 72, y: 50,  desk: "Analytics Station",  z: 1 },
-    { id: "vibe",    x: 42, y: 76,  desk: "Creative Studio",    z: 0 },
-    { id: "scout",   x: 13, y: 76,  desk: "Scout Station",      z: 0 },
-    { id: "forge",   x: 72, y: 76,  desk: "Forge Lab",          z: 0 },
+    { id: "main",    x: 50, y: 19, desk: "CEO Corner",         z: 2, size: "lg" as const, popupUp: false },
+    { id: "forge",   x: 21, y: 47, desk: "Forge Lab",          z: 1, size: "sm" as const, popupUp: false },
+    { id: "insight", x: 50, y: 47, desk: "Analytics Hub",      z: 1, size: "sm" as const, popupUp: false },
+    { id: "vibe",    x: 79, y: 47, desk: "Creative Studio",    z: 1, size: "sm" as const, popupUp: false },
+    { id: "mission", x: 32, y: 76, desk: "Ops Center",         z: 0, size: "sm" as const, popupUp: true  },
+    { id: "scout",   x: 68, y: 76, desk: "Scout Station",      z: 0, size: "sm" as const, popupUp: true  },
   ];
 
-  // Screen content per agent type
+  // Tiny screen content — realistic minimal lines
   const getScreenContent = (screenType: string, color: string, isWorking: boolean) => {
     if (!isWorking) return (
-      <div className="w-full h-full rounded flex items-center justify-center bg-gray-900/80">
-        <div className="text-xs text-gray-600 animate-pulse">💤</div>
+      <div style={{ width: "100%", height: "100%", background: "#080808", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 4, height: 4, borderRadius: "50%", background: "#222" }} />
       </div>
     );
 
-    if (screenType === "executive") return (
-      <div className="w-full h-full rounded relative overflow-hidden bg-gray-950">
-        <div className="absolute inset-1 space-y-0.5 p-0.5">
-          {[80, 60, 90, 45, 70].map((w, i) => (
-            <div key={i} className="h-0.5 rounded animate-pulse"
-                 style={{ width: `${w}%`, background: color, opacity: 0.7, animationDelay: `${i * 0.2}s` }} />
-          ))}
-        </div>
-        <div className="absolute inset-0 rounded" style={{ background: `linear-gradient(to top, ${color}15, transparent)` }} />
-      </div>
-    );
+    const lines: number[] = {
+      executive:  [75, 50, 85, 40],
+      analytics:  [60, 80, 45, 90],
+      monitoring: [70, 55, 90, 35],
+      creative:   [80, 60, 70, 50],
+    }[screenType] || [70, 55, 80, 45];
 
-    if (screenType === "analytics") return (
-      <div className="w-full h-full rounded relative overflow-hidden bg-gray-950">
-        <div className="absolute bottom-1 left-1 right-1 flex items-end gap-0.5 h-3/4">
-          {[40, 65, 30, 80, 55, 70, 45].map((h, i) => (
-            <div key={i} className="flex-1 rounded-sm animate-pulse"
-                 style={{ height: `${h}%`, background: color, opacity: 0.6, animationDelay: `${i * 0.15}s` }} />
-          ))}
-        </div>
-        <div className="absolute inset-0 rounded" style={{ background: `linear-gradient(to top, ${color}15, transparent)` }} />
-      </div>
-    );
-
-    if (screenType === "monitoring") return (
-      <div className="w-full h-full rounded relative overflow-hidden bg-gray-950">
-        <div className="absolute inset-1 space-y-0.5">
-          <div className="flex items-center gap-0.5">
-            <div className="w-1 h-1 rounded-full animate-pulse" style={{ background: color }} />
-            <div className="flex-1 h-0.5 rounded" style={{ background: color, opacity: 0.4 }} />
-          </div>
-          <div className="flex items-center gap-0.5">
-            <div className="w-1 h-1 rounded-full bg-green-400 animate-pulse" style={{ animationDelay: '0.3s' }} />
-            <div className="flex-1 h-0.5 rounded bg-green-400 opacity-40" />
-          </div>
-          <div className="flex items-center gap-0.5">
-            <div className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" style={{ animationDelay: '0.6s' }} />
-            <div className="w-3/4 h-0.5 rounded bg-amber-400 opacity-40" />
-          </div>
-          <div className="flex items-center gap-0.5">
-            <div className="w-1 h-1 rounded-full animate-pulse" style={{ background: color, animationDelay: '0.9s' }} />
-            <div className="flex-1 h-0.5 rounded" style={{ background: color, opacity: 0.4 }} />
-          </div>
-        </div>
-        <div className="absolute inset-0 rounded" style={{ background: `linear-gradient(to top, ${color}15, transparent)` }} />
-      </div>
-    );
-
-    // creative
     return (
-      <div className="w-full h-full rounded relative overflow-hidden bg-gray-950">
-        <div className="absolute inset-1 grid grid-cols-3 gap-0.5">
-          {[color, '#ec4899', '#8b5cf6', '#f59e0b', color, '#ec4899'].map((c, i) => (
-            <div key={i} className="rounded-sm animate-pulse"
-                 style={{ background: c, opacity: 0.5, animationDelay: `${i * 0.2}s` }} />
-          ))}
-        </div>
-        <div className="absolute inset-0 rounded" style={{ background: `linear-gradient(to top, ${color}15, transparent)` }} />
+      <div style={{ width: "100%", height: "100%", background: "#080808", padding: "2px 3px" }}>
+        {lines.map((w, i) => (
+          <div key={i} style={{
+            width: `${w}%`, height: 2,
+            background: color,
+            opacity: 0.45 + i * 0.08,
+            marginBottom: 2,
+            borderRadius: 1,
+            animation: `linePulse 2.2s ease-in-out ${i * 0.35}s infinite`,
+          }} />
+        ))}
       </div>
     );
   };
 
   return (
-    <div className="p-8" style={{ fontFamily: 'system-ui, sans-serif' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-6" style={{ fontFamily: "system-ui, sans-serif" }}>
+
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-wide">🏛️ The Office</h1>
-          <p className="text-sm mt-0.5" style={{ color: '#b8a070' }}>APEX AI Company — Executive Headquarters</p>
+          <h1 className="text-2xl font-bold text-white tracking-wide">🏢 The Office</h1>
+          <p className="text-sm mt-0.5" style={{ color: "#6b7280" }}>
+            APEX AI Company — Live Floor View
+          </p>
         </div>
-        <div className="text-sm px-4 py-2 rounded-full border"
-             style={{ color: '#b8a070', borderColor: '#b8a07040', background: 'rgba(184,160,112,0.06)' }}>
-          {time.toLocaleTimeString()}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-full"
+               style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)", color: "#10b981" }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" style={{ animation: "dot-pulse 1.8s ease-in-out infinite" }} />
+            Live
+          </div>
+          <div className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full"
+               style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "#6b7280" }}>
+            <span>{isDaytime ? "☀️" : isEvening ? "🌆" : "🌙"}</span>
+            <span>{time.toLocaleTimeString()}</span>
+          </div>
         </div>
       </div>
 
-      {/* ─────────────────────────────────────────
-          OFFICE FLOOR PLAN — Luxury Executive HQ
-          ───────────────────────────────────────── */}
-      <div className="rounded-xl border mb-8 relative overflow-hidden shadow-2xl"
+      {/* ── Office Floor Plan ── */}
+      <div className="rounded-2xl border mb-6"
            style={{
-             borderColor: '#b8a07030',
-             background: '#0d0c08',
-             boxShadow: '0 25px 80px rgba(0,0,0,0.8), inset 0 0 120px rgba(184,160,112,0.03)',
+             borderColor: "rgba(255,255,255,0.07)",
+             background: "#09090b",
+             boxShadow: "0 24px 64px rgba(0,0,0,0.7)",
+             position: "relative",
            }}>
 
-        {/* ── CITY SKYLINE BACKDROP ── */}
-        <div className="absolute inset-x-0 top-0 h-56 overflow-hidden pointer-events-none"
-             style={{ opacity: 0.35 }}>
-          {/* Sky gradient */}
-          <div className="absolute inset-0"
-               style={{ background: 'linear-gradient(to bottom, #070508 0%, #0e0a14 60%, transparent 100%)' }} />
-          {/* Building silhouettes */}
-          <svg viewBox="0 0 1200 220" className="absolute bottom-0 w-full h-full" preserveAspectRatio="xMidYMax meet">
-            {/* Far buildings — darker */}
-            <rect x="0"   y="100" width="60"  height="120" fill="#1a1520" />
-            <rect x="50"  y="60"  width="45"  height="160" fill="#1a1520" />
-            <rect x="90"  y="80"  width="70"  height="140" fill="#1a1520" />
-            <rect x="150" y="40"  width="55"  height="180" fill="#1a1520" />
-            <rect x="200" y="90"  width="40"  height="130" fill="#1a1520" />
-            <rect x="230" y="50"  width="80"  height="170" fill="#1a1520" />
-            <rect x="300" y="70"  width="50"  height="150" fill="#1a1520" />
-            <rect x="345" y="30"  width="65"  height="190" fill="#1a1520" />
-            <rect x="400" y="85"  width="45"  height="135" fill="#1a1520" />
-            <rect x="440" y="55"  width="70"  height="165" fill="#1a1520" />
-            <rect x="505" y="20"  width="55"  height="200" fill="#1a1520" />
-            <rect x="555" y="75"  width="60"  height="145" fill="#1a1520" />
-            <rect x="610" y="45"  width="80"  height="175" fill="#1a1520" />
-            <rect x="685" y="65"  width="50"  height="155" fill="#1a1520" />
-            <rect x="730" y="35"  width="65"  height="185" fill="#1a1520" />
-            <rect x="790" y="80"  width="45"  height="140" fill="#1a1520" />
-            <rect x="830" y="50"  width="75"  height="170" fill="#1a1520" />
-            <rect x="900" y="25"  width="60"  height="195" fill="#1a1520" />
-            <rect x="955" y="70"  width="50"  height="150" fill="#1a1520" />
-            <rect x="1000" y="45" width="80"  height="175" fill="#1a1520" />
-            <rect x="1075" y="60" width="55"  height="160" fill="#1a1520" />
-            <rect x="1125" y="90" width="75"  height="130" fill="#1a1520" />
-            {/* Glowing windows — amber/gold */}
-            {[
-              [55,70],[56,82],[57,94],[70,65],[72,77],[91,90],[92,105],[160,52],[161,65],[162,78],
-              [235,62],[236,75],[237,88],[238,101],[310,82],[311,95],[350,40],[351,55],[352,68],
-              [445,65],[446,78],[510,28],[511,42],[512,55],[513,68],[560,82],[561,95],[615,53],
-              [616,68],[617,83],[690,72],[691,85],[735,42],[736,57],[737,70],[795,88],[795,100],
-              [835,58],[836,72],[837,85],[905,32],[906,48],[907,62],[908,75],[960,78],[961,90],
-              [1005,52],[1006,68],[1007,83],[1080,65],[1081,80],[1130,95],[1131,108],
-            ].map(([x, y], i) => (
-              <rect key={i} x={x} y={y} width="3" height="3" fill="#d4af37" opacity="0.6"
-                    style={{ animation: `windowFlicker ${2 + (i % 5) * 0.7}s ease-in-out infinite`, animationDelay: `${(i * 0.3) % 3}s` }} />
-            ))}
-          </svg>
-        </div>
-
-        {/* ── GLASS WALL FRAME ── */}
-        <div className="absolute inset-x-0 top-0 h-56 pointer-events-none border-b"
-             style={{ borderColor: '#b8a07018', background: 'linear-gradient(to bottom, rgba(184,160,112,0.02), transparent)' }} />
-
-        {/* ── MARBLE FLOOR ── */}
-        <div className="absolute inset-0 pointer-events-none" style={{ top: '180px' }}>
-          {/* Base charcoal */}
-          <div className="absolute inset-0" style={{ background: '#111008' }} />
-          {/* Marble tile grid */}
-          <div className="absolute inset-0" style={{
-            backgroundImage: `
-              linear-gradient(to right, rgba(184,160,112,0.08) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(184,160,112,0.08) 1px, transparent 1px)
-            `,
-            backgroundSize: '80px 80px',
-          }} />
-          {/* Gold veining — diagonal streaks */}
-          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 600" preserveAspectRatio="none">
-            <path d="M0,80 Q200,60 400,100 T800,80 T1200,90" stroke="#b8a070" strokeWidth="0.4" fill="none" opacity="0.15" />
-            <path d="M0,180 Q300,150 600,200 T1200,170" stroke="#b8a070" strokeWidth="0.3" fill="none" opacity="0.12" />
-            <path d="M100,0 Q150,100 180,300 T220,600" stroke="#b8a070" strokeWidth="0.4" fill="none" opacity="0.1" />
-            <path d="M400,0 Q430,120 450,280 T480,600" stroke="#b8a070" strokeWidth="0.3" fill="none" opacity="0.1" />
-            <path d="M700,0 Q740,150 760,320 T790,600" stroke="#b8a070" strokeWidth="0.4" fill="none" opacity="0.1" />
-            <path d="M1000,0 Q1020,100 1040,300 T1080,600" stroke="#b8a070" strokeWidth="0.3" fill="none" opacity="0.1" />
-            <path d="M0,320 Q400,280 700,340 T1200,310" stroke="#c9a227" strokeWidth="0.5" fill="none" opacity="0.08" />
-          </svg>
-          {/* Warm ambient glow from floor */}
-          <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 42% 50%, rgba(184,160,112,0.04), transparent 60%)' }} />
-        </div>
-
-        {/* ── GOLD PERIMETER TRIM ── */}
-        <div className="absolute inset-4 rounded-lg pointer-events-none"
-             style={{ border: '1px solid rgba(184,160,112,0.15)', boxShadow: 'inset 0 0 80px rgba(184,160,112,0.02)' }} />
-
-        {/* ── WALL ART — top-left, gold-framed abstract ── */}
-        <div className="absolute pointer-events-none"
-             style={{ top: '24px', left: '24px', width: '72px', height: '60px' }}>
-          <div className="w-full h-full rounded-sm relative overflow-hidden"
-               style={{ border: '2px solid #b8a070', background: '#1a1510', boxShadow: '0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px #b8a07030' }}>
-            {/* Abstract art */}
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #2d1c4a 0%, #0d1a2e 50%, #1a0d0a 100%)' }} />
-            <div className="absolute" style={{ top: '30%', left: '10%', width: '40%', height: '3px', background: '#d4af37', opacity: 0.6, borderRadius: '2px' }} />
-            <div className="absolute" style={{ top: '50%', left: '25%', width: '60%', height: '1px', background: '#b8a070', opacity: 0.4 }} />
-            <div className="absolute" style={{ top: '20%', left: '55%', width: '2px', height: '50%', background: '#8b5cf6', opacity: 0.5, borderRadius: '1px' }} />
-            {/* Gold frame edge accent */}
-            <div className="absolute inset-0" style={{ boxShadow: 'inset 0 0 8px rgba(184,160,112,0.15)' }} />
-          </div>
-          <div className="text-center text-xs mt-1" style={{ color: '#b8a07060', fontSize: '9px' }}>Art Collection</div>
-        </div>
-
-        {/* ── WALL ART — top-right ── */}
-        <div className="absolute pointer-events-none"
-             style={{ top: '24px', right: '24px', width: '72px', height: '60px' }}>
-          <div className="w-full h-full rounded-sm relative overflow-hidden"
-               style={{ border: '2px solid #b8a070', background: '#1a1510', boxShadow: '0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px #b8a07030' }}>
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(45deg, #0d1f1a 0%, #1a1020 50%, #1f1a00 100%)' }} />
-            <div className="absolute" style={{ top: '35%', left: '15%', width: '70%', height: '2px', background: '#06b6d4', opacity: 0.5, borderRadius: '2px' }} />
-            <div className="absolute" style={{ top: '55%', left: '20%', width: '50%', height: '1px', background: '#10b981', opacity: 0.4 }} />
-            <div className="absolute" style={{ top: '15%', left: '65%', width: '2px', height: '40%', background: '#d4af37', opacity: 0.6, borderRadius: '1px' }} />
-            <div className="absolute inset-0" style={{ boxShadow: 'inset 0 0 8px rgba(184,160,112,0.15)' }} />
-          </div>
-          <div className="text-center text-xs mt-1" style={{ color: '#b8a07060', fontSize: '9px' }}>Art Collection</div>
-        </div>
-
-        {/* ── HQ TITLE ── */}
-        <div className="absolute pointer-events-none" style={{ top: '28px', left: '50%', transform: 'translateX(-50%)' }}>
-          <div className="text-center">
-            <div className="text-lg font-bold tracking-[0.3em] uppercase"
-                 style={{ color: '#b8a07080', textShadow: '0 0 30px rgba(184,160,112,0.2)' }}>
-              AI Company HQ
+        {/* Top label bar */}
+        <div className="flex items-center justify-between px-6 py-3 border-b"
+             style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+          <div className="flex items-center gap-3">
+            <div style={{ fontSize: 11, color: "#374151", fontFamily: "monospace", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+              Open Office — Floor 1
             </div>
-            <div className="flex items-center justify-center gap-2 mt-1">
-              <div className="h-px w-12" style={{ background: 'linear-gradient(to right, transparent, #b8a070)' }} />
-              <div className="w-1 h-1 rounded-full" style={{ background: '#d4af37' }} />
-              <div className="h-px w-12" style={{ background: 'linear-gradient(to left, transparent, #b8a070)' }} />
-            </div>
-          </div>
-        </div>
-
-        {/* ── TIME / LIGHTING INDICATOR ── */}
-        <div className="absolute z-20 flex items-center gap-2 text-xs px-3 py-1.5 rounded-full"
-             style={{ top: '16px', right: '110px', background: 'rgba(13,12,8,0.8)', border: '1px solid rgba(184,160,112,0.2)', color: '#b8a070', backdropFilter: 'blur(8px)' }}>
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse"
-                style={{ background: isDaytime ? '#fcd34d' : isEvening ? '#fb923c' : '#818cf8' }} />
-          {isDaytime ? '☀️ Day' : isEvening ? '🌆 Evening' : '🌙 Night'}
-        </div>
-
-        {/* ── OFFICE FLOOR ── */}
-        <div className="relative" style={{ height: '760px' }}>
-
-          {/* ── CONFERENCE TABLE — center diamond ── */}
-          <div className="absolute z-10"
-               style={{ left: '42%', top: '48%', transform: 'translate(-50%, -50%)' }}>
-            <div className="relative flex flex-col items-center">
-              {/* Table shadow */}
-              <div className="absolute rounded-full blur-xl" style={{ bottom: '-12px', width: '180px', height: '30px', background: 'rgba(0,0,0,0.7)' }} />
-              {/* Table surface */}
-              <div className="rounded-xl flex items-center justify-center relative overflow-hidden"
-                   style={{
-                     width: '160px', height: '100px',
-                     background: 'linear-gradient(145deg, #2d1c0e 0%, #1a0f07 60%, #231508 100%)',
-                     border: '2px solid #b8a070',
-                     boxShadow: '0 8px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(184,160,112,0.15), 0 0 0 1px rgba(184,160,112,0.05)',
-                   }}>
-                {/* Gold inlay pattern */}
-                <div className="absolute inset-3 rounded-lg" style={{ border: '1px solid rgba(184,160,112,0.2)' }} />
-                <div className="text-center z-10 relative">
-                  <div className="text-base">📋</div>
-                  <div className="text-xs mt-0.5" style={{ color: '#b8a07080' }}>Board Room</div>
-                </div>
-                {/* Reflection */}
-                <div className="absolute inset-0 rounded-xl" style={{ background: 'linear-gradient(145deg, rgba(184,160,112,0.05) 0%, transparent 50%)' }} />
-              </div>
-              {/* Ghost chairs around table */}
-              {[
-                { top: '-18px', left: '50%', transform: 'translateX(-50%)' },
-                { bottom: '-18px', left: '50%', transform: 'translateX(-50%)' },
-                { left: '-18px', top: '50%', transform: 'translateY(-50%)' },
-                { right: '-18px', top: '50%', transform: 'translateY(-50%)' },
-              ].map((pos, i) => (
-                <div key={i} className="absolute w-7 h-7 rounded-full"
-                     style={{ ...pos, background: 'rgba(30,20,10,0.8)', border: '1px solid rgba(184,160,112,0.15)' }} />
+            <div className="flex items-center gap-1">
+              {["EXEC", "TEAM", "OPS"].map((l) => (
+                <span key={l} style={{
+                  fontSize: 9, color: "#1f2937", fontFamily: "monospace",
+                  padding: "1px 5px", borderRadius: 3, border: "1px solid rgba(255,255,255,0.05)",
+                }}>{l}</span>
               ))}
             </div>
           </div>
+          {/* Agent dots legend */}
+          <div className="flex items-center gap-2">
+            {agents.map((a) => (
+              <div key={a._id} className="flex items-center gap-1">
+                <div style={{
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: a.color,
+                  boxShadow: a.status === "working" ? `0 0 4px ${a.color}` : "none",
+                  opacity: a.status === "working" ? 1 : 0.25,
+                }} />
+                <span style={{ fontSize: 9, color: "#374151", fontFamily: "monospace" }}>{a.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-          {/* ── ARCHITECTURAL PLANTS ── */}
-          {/* Bottom-left */}
-          <div className="absolute flex flex-col items-center pointer-events-none"
-               style={{ bottom: '28px', left: '28px' }}>
-            <div className="text-5xl" style={{ filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.6))', animation: 'sway 4s ease-in-out infinite' }}>🌿</div>
-            <div className="text-4xl -mt-2" style={{ filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.5))', animation: 'sway 3.8s ease-in-out infinite', animationDelay: '0.3s' }}>🪴</div>
-          </div>
-          {/* Bottom-right */}
-          <div className="absolute flex flex-col items-center pointer-events-none"
-               style={{ bottom: '28px', right: '28px' }}>
-            <div className="text-5xl" style={{ filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.6))', animation: 'sway 3.5s ease-in-out infinite', animationDelay: '0.5s' }}>🌿</div>
-            <div className="text-4xl -mt-2" style={{ filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.5))', animation: 'sway 4.2s ease-in-out infinite', animationDelay: '0.8s' }}>🪴</div>
-          </div>
+        {/* Office area */}
+        <div className="relative" style={{ height: 600, overflow: "visible" }}>
+
+          {/* Floor tiles */}
+          <div className="absolute inset-0 rounded-b-2xl overflow-hidden pointer-events-none" style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(255,255,255,0.018) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.018) 1px, transparent 1px)
+            `,
+            backgroundSize: "52px 52px",
+          }} />
+
+          {/* Very subtle zone backgrounds for rows */}
+          <div className="absolute pointer-events-none" style={{
+            top: "2%", left: "28%", right: "28%", height: "30%",
+            background: "radial-gradient(ellipse, rgba(16,185,129,0.04) 0%, transparent 70%)",
+            borderRadius: "50%",
+          }} />
+          <div className="absolute pointer-events-none" style={{
+            top: "30%", left: "5%", right: "5%", height: "32%",
+            background: "radial-gradient(ellipse, rgba(59,130,246,0.03) 0%, transparent 70%)",
+          }} />
+
+          {/* Row section dividers (hairlines) */}
+          <div className="absolute pointer-events-none" style={{ top: "35%", left: "8%", right: "8%", height: 1, background: "rgba(255,255,255,0.025)" }} />
+          <div className="absolute pointer-events-none" style={{ top: "62%", left: "8%", right: "8%", height: 1, background: "rgba(255,255,255,0.025)" }} />
+
+          {/* Row labels — left rail */}
+          {[
+            { label: "EXEC", y: "19%" },
+            { label: "TEAM", y: "47%" },
+            { label: "OPS",  y: "76%" },
+          ].map(({ label, y }) => (
+            <div key={label} className="absolute pointer-events-none" style={{
+              left: 12, top: y, transform: "translateY(-50%)",
+              fontSize: 8, color: "#1f2937", fontFamily: "monospace", letterSpacing: "0.15em", writingMode: "vertical-lr",
+            }}>
+              {label}
+            </div>
+          ))}
+
+          {/* ── Office props ── */}
+
+          {/* Plants — corners */}
+          <div className="absolute pointer-events-none" style={{ top: 10, right: 18, fontSize: 24, filter: "drop-shadow(0 3px 6px rgba(0,0,0,0.6))", animation: "sway 4s ease-in-out infinite" }}>🪴</div>
+          <div className="absolute pointer-events-none" style={{ bottom: 16, left: 16, fontSize: 22, filter: "drop-shadow(0 3px 6px rgba(0,0,0,0.6))", animation: "sway 3.8s ease-in-out infinite 0.4s" }}>🌿</div>
+          <div className="absolute pointer-events-none" style={{ bottom: 16, right: 16, fontSize: 20, filter: "drop-shadow(0 3px 6px rgba(0,0,0,0.6))", animation: "sway 4.2s ease-in-out infinite 0.8s" }}>🪴</div>
+          <div className="absolute pointer-events-none" style={{ top: 10, left: 18, fontSize: 20, filter: "drop-shadow(0 3px 6px rgba(0,0,0,0.6))", animation: "sway 3.6s ease-in-out infinite 0.2s" }}>🌿</div>
+
           {/* Coffee station */}
-          <div className="absolute flex flex-col items-center"
-               style={{ top: '120px', left: '28px' }}>
-            <div className="text-3xl" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.5))' }}>☕</div>
-            <div className="text-xs mt-1" style={{ color: '#b8a07050', fontSize: '10px' }}>Coffee</div>
-          </div>
-          {/* Frosted exit door */}
-          <div className="absolute flex flex-col items-center"
-               style={{ bottom: '28px', right: '50%', transform: 'translateX(50%)' }}>
-            <div className="text-3xl" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.5))' }}>🚪</div>
-            <div className="text-xs mt-1" style={{ color: '#b8a07050', fontSize: '10px' }}>Exit</div>
+          <div className="absolute pointer-events-none flex flex-col items-center" style={{ top: "42%", left: "7%", transform: "translateY(-50%)" }}>
+            <div style={{ fontSize: 18, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }}>☕</div>
+            <div style={{ fontSize: 8, color: "#1f2937", fontFamily: "monospace", marginTop: 2 }}>coffee</div>
           </div>
 
-          {/* ── AGENT WORKSTATIONS ── */}
+          {/* Meeting table — center, between rows 2 and 3 */}
+          <div className="absolute pointer-events-none" style={{
+            left: "50%", top: "62%",
+            transform: "translate(-50%, -50%)",
+          }}>
+            <div style={{
+              width: 86, height: 52,
+              background: "linear-gradient(145deg, #1a1612, #0f0d0a)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: 6,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexDirection: "column", gap: 3,
+            }}>
+              <div style={{ fontSize: 14 }}>📋</div>
+              <div style={{ fontSize: 7, color: "#374151", fontFamily: "monospace" }}>meeting</div>
+            </div>
+            {/* Chairs around table */}
+            {[
+              { top: -8, left: "50%", transform: "translateX(-50%)" },
+              { bottom: -8, left: "50%", transform: "translateX(-50%)" },
+              { left: -8, top: "50%", transform: "translateY(-50%)" },
+              { right: -8, top: "50%", transform: "translateY(-50%)" },
+            ].map((pos, i) => (
+              <div key={i} style={{
+                position: "absolute", ...pos,
+                width: 14, height: 6,
+                background: "#161412",
+                border: "1px solid rgba(255,255,255,0.04)",
+                borderRadius: 2,
+              }} />
+            ))}
+          </div>
+
+          {/* ── Agent Workstations ── */}
           {officeLayout.map((station) => {
-            const agent = agents.find(a => a.agentId === station.id);
+            const agent = agents.find((a) => a.agentId === station.id);
             if (!agent) return null;
 
             const isWorking = agent.status === "working";
-            const isIdle = agent.status === "idle";
+            const isIdle    = agent.status === "idle";
             const isSelected = selectedAgent === station.id;
+            const isLg = station.size === "lg";
+
+            // Desk dimensions
+            const deskW  = isLg ? 128 : 102;
+            const deskH  = isLg ? 84  : 67;
+            const monW   = isLg ? 50  : 38;
+            const monH   = isLg ? 32  : 24;
+            const kbW    = isLg ? 56  : 44;
 
             return (
               <div key={station.id}
-                   className="absolute cursor-pointer group"
+                   className="absolute cursor-pointer"
                    style={{
                      left: `${station.x}%`,
                      top: `${station.y}%`,
-                     transform: 'translate(-50%, -50%)',
-                     zIndex: isSelected ? 50 : 10 + station.z,
+                     transform: "translate(-50%, -50%)",
+                     zIndex: isSelected ? 100 : 10 + station.z,
                    }}
                    onClick={() => setSelectedAgent(isSelected ? null : station.id)}>
 
-                <div className="relative transition-all duration-500 ease-out group-hover:-translate-y-2"
-                     style={{ transform: isSelected ? 'scale(1.08) translateY(-8px)' : undefined }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", transition: "transform 0.25s", transform: isSelected ? "translateY(-3px)" : undefined }}
+                     className="group hover:-translate-y-1">
 
-                  {/* Ceiling spotlight / ambient pool */}
-                  <div className="absolute rounded-full blur-2xl pointer-events-none transition-all duration-500"
-                       style={{
-                         width: '140px', height: '140px',
-                         top: '-30px', left: '-20px',
-                         background: isWorking
-                           ? `radial-gradient(circle, ${agent.glowColor} 0%, transparent 70%)`
-                           : 'radial-gradient(circle, rgba(184,160,112,0.06) 0%, transparent 70%)',
-                         opacity: isSelected ? 1 : isWorking ? 0.7 : 0.3,
-                       }} />
+                  {/* Floor glow pool */}
+                  <div style={{
+                    position: "absolute",
+                    width: deskW + 50, height: deskH + 30,
+                    top: -18, left: -(25),
+                    borderRadius: "50%",
+                    background: `radial-gradient(ellipse, ${agent.glowColor}, transparent 70%)`,
+                    filter: "blur(14px)",
+                    opacity: isWorking ? 0.55 : 0.1,
+                    pointerEvents: "none",
+                    transition: "opacity 0.4s",
+                  }} />
 
-                  {/* ── GLASS DESK ── */}
-                  <div className="relative w-40 h-28 rounded-lg overflow-hidden mb-1"
-                       style={{
-                         background: 'linear-gradient(145deg, rgba(8,18,28,0.92) 0%, rgba(4,10,18,0.95) 100%)',
-                         border: `1.5px solid ${isWorking ? agent.color : '#b8a07099'}`,
-                         boxShadow: isWorking
-                           ? `0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(184,160,112,0.1), 0 0 20px ${agent.glowColor}40`
-                           : '0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(184,160,112,0.1)',
-                         perspective: '600px',
-                       }}>
+                  {/* ── Desk (top-down) ── */}
+                  <div style={{
+                    position: "relative",
+                    width: deskW,
+                    height: deskH,
+                    background: "linear-gradient(148deg, #1d1b18, #111009)",
+                    border: `1.5px solid ${isWorking ? agent.color + "70" : "rgba(255,255,255,0.07)"}`,
+                    borderRadius: 6,
+                    boxShadow: isWorking
+                      ? `0 0 0 1px ${agent.color}12, 0 6px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)`
+                      : "0 6px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.03)",
+                    transition: "border-color 0.3s, box-shadow 0.3s",
+                  }}>
 
-                    {/* Gold trim line at top */}
-                    <div className="absolute top-0 left-0 right-0 h-px"
-                         style={{ background: `linear-gradient(to right, transparent, ${isWorking ? agent.color : '#b8a070'}, transparent)`, opacity: 0.7 }} />
-
-                    {/* Glass reflection */}
-                    <div className="absolute inset-0 rounded-lg pointer-events-none"
-                         style={{ background: 'linear-gradient(145deg, rgba(255,255,255,0.04) 0%, transparent 50%)' }} />
+                    {/* Desk surface sheen */}
+                    <div style={{
+                      position: "absolute", inset: 0, borderRadius: "inherit",
+                      background: "linear-gradient(140deg, rgba(255,255,255,0.03) 0%, transparent 55%)",
+                      pointerEvents: "none",
+                    }} />
 
                     {/* Monitor bezel */}
-                    <div className="absolute w-24 h-[52px] rounded-sm"
-                         style={{ top: '6px', left: '50%', transform: 'translateX(-50%)', background: '#0a0a0a', border: '1.5px solid #1a1a1a', boxShadow: isWorking ? `0 0 12px ${agent.glowColor}` : 'none' }}>
-                      {/* Screen */}
-                      <div className="absolute inset-0.5 rounded-sm overflow-hidden">
+                    <div style={{
+                      position: "absolute",
+                      top: 7,
+                      left: "50%", transform: "translateX(-50%)",
+                      width: monW, height: monH,
+                      background: "#060606",
+                      border: "1px solid #191919",
+                      borderRadius: 2,
+                      boxShadow: isWorking ? `0 0 6px ${agent.glowColor}` : "none",
+                    }}>
+                      {/* Screen content */}
+                      <div style={{ position: "absolute", inset: "1.5px", overflow: "hidden", borderRadius: 1 }}>
                         {getScreenContent(agent.screenType, agent.color, isWorking)}
                       </div>
+                      {/* Monitor stand — tiny indicator */}
+                      <div style={{
+                        position: "absolute", bottom: -3, left: "50%", transform: "translateX(-50%)",
+                        width: 6, height: 2,
+                        background: "#111",
+                        borderRadius: 1,
+                      }} />
                     </div>
 
                     {/* Keyboard */}
-                    <div className="absolute bottom-3 left-1/2 rounded-sm"
-                         style={{ transform: 'translateX(-50%)', width: '68px', height: '10px', background: '#0d1218', border: '1px solid #1a2030', boxShadow: '0 2px 6px rgba(0,0,0,0.4)' }}>
-                      <div className="absolute inset-1 grid grid-cols-6 gap-px opacity-40">
-                        {Array(6).fill(0).map((_,i) => <div key={i} className="rounded-sm" style={{ background: '#2a3040', height: '3px' }} />)}
+                    <div style={{
+                      position: "absolute",
+                      bottom: 9,
+                      left: "50%", transform: "translateX(-50%)",
+                      width: kbW, height: 7,
+                      background: "#0c0c0c",
+                      border: "0.5px solid #1e1e1e",
+                      borderRadius: 1,
+                    }}>
+                      {/* Key rows hint */}
+                      <div style={{ display: "flex", gap: 1, padding: "1px 2px", opacity: 0.25 }}>
+                        {Array(8).fill(0).map((_, i) => (
+                          <div key={i} style={{ flex: 1, height: 2, background: "#555", borderRadius: 0.5 }} />
+                        ))}
                       </div>
                     </div>
 
                     {/* Mouse */}
-                    <div className="absolute bottom-3 right-3 rounded-sm"
-                         style={{ width: '8px', height: '12px', background: '#0d1218', border: '1px solid #1a2030' }} />
+                    <div style={{
+                      position: "absolute",
+                      bottom: 9, right: isLg ? 8 : 6,
+                      width: 6, height: 9,
+                      background: "#0c0c0c",
+                      border: "0.5px solid #1e1e1e",
+                      borderRadius: 2,
+                    }} />
 
-                    {/* Desk item (agent-specific prop) */}
-                    <div className="absolute top-1.5 right-2 text-sm leading-none">
-                      {agent.deskItem}
+                    {/* Status LED (top-right corner) */}
+                    <div style={{
+                      position: "absolute", top: 5, right: 5,
+                      width: 5, height: 5, borderRadius: "50%",
+                      background: isWorking ? agent.color : isIdle ? "#f59e0b" : "#2d2d2d",
+                      boxShadow: isWorking ? `0 0 5px ${agent.color}` : "none",
+                      animation: isWorking ? "dot-pulse 2s ease-in-out infinite" : "none",
+                    }} />
+
+                    {/* Selected ring */}
+                    {isSelected && (
+                      <div style={{
+                        position: "absolute", inset: -3, borderRadius: 9,
+                        border: `1.5px solid ${agent.color}`,
+                        boxShadow: `0 0 14px ${agent.glowColor}`,
+                        pointerEvents: "none",
+                        animation: "ring-pulse 1.5s ease-in-out infinite",
+                      }} />
+                    )}
+                  </div>
+
+                  {/* Chair */}
+                  <div style={{
+                    width: isLg ? 38 : 30, height: 8,
+                    marginTop: 3,
+                    background: "#1a1614",
+                    border: "1px solid rgba(255,255,255,0.04)",
+                    borderRadius: 3,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+                  }} />
+
+                  {/* Agent label */}
+                  <div style={{ textAlign: "center", marginTop: 5, userSelect: "none" }}>
+                    <div style={{
+                      fontSize: isLg ? 12 : 10,
+                      fontWeight: 700,
+                      color: "white",
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                    }}>
+                      {agent.name}
                     </div>
-
-                    {/* Gold nameplate at bottom */}
-                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-sm"
-                         style={{ background: 'rgba(184,160,112,0.08)', border: '1px solid rgba(184,160,112,0.2)', whiteSpace: 'nowrap' }}>
-                      <div className="text-center" style={{ fontSize: '7px', color: '#b8a070', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-                        {station.desk}
-                      </div>
+                    <div style={{
+                      fontSize: 9,
+                      color: agent.color + "aa",
+                      marginTop: 1,
+                      letterSpacing: "0.03em",
+                    }}>
+                      {agent.role}
+                    </div>
+                    <div style={{
+                      marginTop: 4,
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+                    }}>
+                      <div style={{
+                        width: 5, height: 5, borderRadius: "50%",
+                        background: isWorking ? agent.color : isIdle ? "#f59e0b" : "#374151",
+                        boxShadow: isWorking ? `0 0 4px ${agent.color}` : "none",
+                      }} />
+                      <span style={{ fontSize: 9, color: "#4b5563", textTransform: "capitalize" }}>
+                        {agent.status}
+                      </span>
                     </div>
                   </div>
 
-                  {/* ── LEATHER CHAIR (visual) ── */}
-                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full"
-                       style={{ width: '50px', height: '12px', background: '#1a1008', border: '1px solid rgba(184,160,112,0.15)', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} />
-
-                  {/* ── AGENT AVATAR ── */}
-                  <div className="flex flex-col items-center mt-1">
-                    {/* Avatar ring */}
-                    <div className="relative w-16 h-16 rounded-full flex items-center justify-center text-3xl"
-                         style={{
-                           background: `radial-gradient(circle at 30% 30%, ${agent.color}20, rgba(13,12,8,0.8))`,
-                           border: `2px solid ${agent.color}`,
-                           boxShadow: isWorking ? `0 0 0 3px ${agent.glowColor}30, 0 0 20px ${agent.glowColor}40, 0 8px 24px rgba(0,0,0,0.5)` : '0 8px 24px rgba(0,0,0,0.5)',
-                           transition: 'all 0.5s ease',
-                         }}>
-
-                      {/* Pulsing aura */}
-                      {isWorking && (
-                        <div className="absolute inset-0 rounded-full animate-ping"
-                             style={{ background: `${agent.color}10`, animationDuration: '2s' }} />
-                      )}
-
-                      {agent.avatar}
-
-                      {/* Status dot */}
-                      <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full"
-                           style={{
-                             background: isWorking ? agent.color : isIdle ? '#f59e0b' : '#4b5563',
-                             border: '2px solid #0d0c08',
-                             boxShadow: isWorking ? `0 0 8px ${agent.color}` : 'none',
-                           }} />
-                    </div>
-
-                    {/* Name + role */}
-                    <div className="text-center mt-2">
-                      <div className="font-bold text-sm text-white tracking-wide drop-shadow-lg">
-                        {agent.name}
-                      </div>
-                      <div className="text-xs mt-0.5" style={{ color: '#c9b090' }}>{agent.role}</div>
-
-                      {/* Task bubble */}
-                      {agent.currentTask && (
-                        <div className="mt-2 px-3 py-1.5 rounded-lg text-xs max-w-[160px] mx-auto"
-                             style={{
-                               background: 'rgba(13,12,8,0.9)',
-                               border: `1px solid ${agent.color}30`,
-                               color: '#d1d5db',
-                               backdropFilter: 'blur(8px)',
-                               boxShadow: `0 4px 16px rgba(0,0,0,0.4), 0 0 0 1px ${agent.color}10`,
-                             }}>
-                          💭 {agent.currentTask}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* ── SELECTED DETAIL PANEL ── */}
+                  {/* ── Selected Detail Panel ── */}
                   {isSelected && (
-                    <div className="absolute z-50 mt-4 w-64 rounded-xl p-4"
-                         style={{
-                           top: '100%',
-                           left: '50%',
-                           transform: 'translateX(-50%)',
-                           background: 'rgba(13,12,8,0.97)',
-                           border: `1px solid ${agent.color}40`,
-                           boxShadow: `0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(184,160,112,0.1), 0 0 30px ${agent.glowColor}20`,
-                           backdropFilter: 'blur(20px)',
-                         }}>
-                      {/* Header */}
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center text-2xl"
-                               style={{ background: `${agent.color}20`, border: `1px solid ${agent.color}50` }}>
+                    <div style={{
+                      position: "absolute",
+                      ...(station.popupUp
+                        ? { bottom: "100%", marginBottom: 10 }
+                        : { top: "100%", marginTop: 10 }),
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      width: 230,
+                      background: "rgba(9,9,11,0.98)",
+                      border: `1px solid ${agent.color}40`,
+                      borderRadius: 12,
+                      padding: 14,
+                      backdropFilter: "blur(24px)",
+                      boxShadow: `0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04), 0 0 28px ${agent.glowColor}20`,
+                      zIndex: 200,
+                    }}>
+                      {/* Panel header */}
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <div style={{
+                            width: 32, height: 32, borderRadius: "50%",
+                            background: `${agent.color}18`, border: `1px solid ${agent.color}45`,
+                            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16,
+                          }}>
                             {agent.avatar}
                           </div>
                           <div>
-                            <div className="font-bold text-sm text-white">{agent.name}</div>
-                            <div className="text-xs" style={{ color: '#b8a070' }}>{agent.role}</div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: "white" }}>{agent.name}</div>
+                            <div style={{ fontSize: 10, color: agent.color }}>{agent.role}</div>
                           </div>
                         </div>
-                        <button onClick={(e) => { e.stopPropagation(); setSelectedAgent(null); }}
-                                className="text-gray-600 hover:text-white transition-colors text-lg leading-none">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setSelectedAgent(null); }}
+                          style={{ color: "#4b5563", fontSize: 14, background: "none", border: "none", cursor: "pointer", lineHeight: 1, padding: 2 }}>
                           ✕
                         </button>
                       </div>
                       {/* Divider */}
-                      <div className="h-px mb-4" style={{ background: `linear-gradient(to right, transparent, ${agent.color}40, transparent)` }} />
-                      {/* Details */}
-                      <div className="space-y-3 text-xs">
-                        <div className="flex justify-between">
-                          <span style={{ color: '#b8a07080' }}>Status</span>
-                          <span className="font-medium capitalize" style={{ color: agent.color }}>{agent.status}</span>
+                      <div style={{ height: 1, background: `linear-gradient(to right, transparent, ${agent.color}35, transparent)`, marginBottom: 10 }} />
+                      {/* Info rows */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 7, fontSize: 11 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <span style={{ color: "#4b5563" }}>Status</span>
+                          <span style={{ color: agent.color, fontWeight: 600, textTransform: "capitalize" }}>{agent.status}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span style={{ color: '#b8a07080' }}>Workstation</span>
-                          <span className="text-gray-300">{station.desk}</span>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <span style={{ color: "#4b5563" }}>Station</span>
+                          <span style={{ color: "#9ca3af" }}>{station.desk}</span>
                         </div>
                         {agent.currentTask && (
                           <div>
-                            <div className="mb-1" style={{ color: '#b8a07080' }}>Current Task</div>
-                            <div className="text-gray-200 leading-relaxed">{agent.currentTask}</div>
+                            <div style={{ color: "#4b5563", marginBottom: 4 }}>Current task</div>
+                            <div style={{ color: "#d1d5db", lineHeight: 1.5 }}>{agent.currentTask}</div>
                           </div>
                         )}
-                        <div className="flex justify-between">
-                          <span style={{ color: '#b8a07080' }}>Last Active</span>
-                          <span className="text-gray-300">{new Date(agent.lastActivity).toLocaleTimeString()}</span>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <span style={{ color: "#4b5563" }}>Last active</span>
+                          <span style={{ color: "#6b7280" }}>{new Date(agent.lastActivity).toLocaleTimeString()}</span>
                         </div>
                       </div>
-                      <button className="w-full mt-4 py-2 rounded-lg text-xs font-medium transition-all"
-                              style={{ background: `${agent.color}15`, border: `1px solid ${agent.color}40`, color: agent.color }}
-                              onMouseEnter={e => (e.currentTarget.style.background = `${agent.color}25`)}
-                              onMouseLeave={e => (e.currentTarget.style.background = `${agent.color}15`)}>
-                        View Full Profile →
-                      </button>
                     </div>
                   )}
-
                 </div>
               </div>
             );
@@ -619,118 +551,130 @@ export default function OfficePage() {
         </div>
       </div>
 
-      {/* ─────────────────────────────────────────
-          TEAM STATUS — Luxury Cards
-          ───────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-6">
+      {/* ── Bottom panels ── */}
+      <div className="grid grid-cols-2 gap-5">
+
         {/* Live Activity */}
-        <div className="rounded-xl p-6" style={{ background: '#0d0c08', border: '1px solid rgba(184,160,112,0.12)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
-          <h3 className="text-base font-semibold mb-4 flex items-center gap-2">
-            <span className="text-xl">📋</span>
-            <span className="tracking-wide" style={{ color: '#e2d4b8' }}>Live Activity</span>
+        <div className="rounded-xl p-5" style={{ background: "#09090b", border: "1px solid rgba(255,255,255,0.06)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
+          <h3 style={{ color: "#e5e7eb", fontSize: 13, fontWeight: 600, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 16 }}>📋</span> Live Activity
           </h3>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
+          <div style={{ display: "flex", flexDirection: "column", gap: 5, maxHeight: 192, overflowY: "auto" }}>
             {activityFeed && activityFeed.length > 0 ? activityFeed.map((entry: any) => {
-              const agentColor: Record<string, string> = {
-                APEX: '#10b981', INSIGHT: '#3b82f6', VIBE: '#f59e0b', MISSION: '#06b6d4',
+              const agentColors: Record<string, string> = {
+                APEX: "#10b981", INSIGHT: "#3b82f6", VIBE: "#f59e0b",
+                MISSION: "#06b6d4", SCOUT: "#8b5cf6", FORGE: "#f97316",
               };
-              const color = agentColor[entry.agent] || '#b8a070';
+              const c = agentColors[entry.agent] || "#6b7280";
               return (
-                <div key={entry._id} className="flex items-start gap-2 px-2 py-1.5 rounded-lg"
-                     style={{ background: 'rgba(184,160,112,0.03)', border: '1px solid rgba(184,160,112,0.06)' }}>
-                  <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: color }} />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-xs font-medium" style={{ color }}>{entry.agent}</span>
-                    <span className="text-xs ml-1" style={{ color: '#b8a07080' }}>·</span>
-                    <span className="text-xs ml-1" style={{ color: '#c9b090' }}>{entry.description}</span>
+                <div key={entry._id} style={{
+                  display: "flex", alignItems: "flex-start", gap: 8,
+                  padding: "6px 10px", borderRadius: 7,
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.04)",
+                }}>
+                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: c, marginTop: 4, flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: c }}>{entry.agent}</span>
+                    <span style={{ fontSize: 11, color: "#374151", margin: "0 4px" }}>·</span>
+                    <span style={{ fontSize: 11, color: "#9ca3af" }}>{entry.description}</span>
                   </div>
-                  <span className="text-xs shrink-0" style={{ color: '#b8a07040' }}>
-                    {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <span style={{ fontSize: 10, color: "#1f2937", flexShrink: 0 }}>
+                    {new Date(entry.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </span>
                 </div>
               );
             }) : (
-              <div className="py-6 text-center text-xs" style={{ color: '#b8a07040' }}>
-                Activity will appear as agents work
+              <div style={{ padding: "24px 0", textAlign: "center", fontSize: 11, color: "#1f2937" }}>
+                Activity appears as agents work
               </div>
             )}
           </div>
         </div>
 
         {/* Team Status */}
-        <div className="rounded-xl p-6" style={{ background: '#0d0c08', border: '1px solid rgba(184,160,112,0.12)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
-          <h3 className="text-base font-semibold mb-5 flex items-center gap-2">
-            <span className="text-xl">👥</span>
-            <span className="tracking-wide" style={{ color: '#e2d4b8' }}>Executive Team</span>
+        <div className="rounded-xl p-5" style={{ background: "#09090b", border: "1px solid rgba(255,255,255,0.06)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
+          <h3 style={{ color: "#e5e7eb", fontSize: 13, fontWeight: 600, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 16 }}>👥</span> Team Status
           </h3>
-          <div className="space-y-3">
+          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
             {agents.map((agent) => {
               const isWorking = agent.status === "working";
-              const isIdle = agent.status === "idle";
               return (
-                <div key={agent._id} className="flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300"
+                <div key={agent._id}
                      style={{
-                       background: 'rgba(184,160,112,0.03)',
-                       border: '1px solid rgba(184,160,112,0.08)',
-                       cursor: 'pointer',
+                       display: "flex", alignItems: "center", justifyContent: "space-between",
+                       padding: "7px 11px", borderRadius: 8, cursor: "pointer",
+                       background: "rgba(255,255,255,0.02)",
+                       border: "1px solid rgba(255,255,255,0.04)",
+                       transition: "border-color 0.2s",
                      }}
-                     onMouseEnter={e => (e.currentTarget.style.borderColor = `${agent.color}30`)}
-                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(184,160,112,0.08)')}
+                     onMouseEnter={(e) => (e.currentTarget.style.borderColor = `${agent.color}35`)}
+                     onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)")}
                      onClick={() => setSelectedAgent(agent.agentId)}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-xl"
-                         style={{ background: `${agent.color}15`, border: `1px solid ${agent.color}40` }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                    <div style={{
+                      width: 26, height: 26, borderRadius: "50%",
+                      background: `${agent.color}15`, border: `1px solid ${agent.color}40`,
+                      display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13,
+                    }}>
                       {agent.avatar}
                     </div>
                     <div>
-                      <div className="font-medium text-sm text-white">{agent.name}</div>
-                      <div className="text-xs" style={{ color: '#b8a07070' }}>{agent.role}</div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: "white" }}>{agent.name}</div>
+                      <div style={{ fontSize: 10, color: "#4b5563" }}>{agent.role}</div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full"
-                         style={{
-                           background: isWorking ? agent.color : isIdle ? '#f59e0b' : '#4b5563',
-                           boxShadow: isWorking ? `0 0 6px ${agent.color}` : 'none',
-                           animation: isWorking ? 'pulse 2s ease-in-out infinite' : 'none',
-                         }} />
-                    <span className="text-xs capitalize" style={{ color: '#b8a07070' }}>{agent.status}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                    <div style={{
+                      width: 6, height: 6, borderRadius: "50%",
+                      background: isWorking ? agent.color : agent.status === "idle" ? "#f59e0b" : "#374151",
+                      boxShadow: isWorking ? `0 0 5px ${agent.color}` : "none",
+                    }} />
+                    <span style={{ fontSize: 10, color: "#4b5563", textTransform: "capitalize" }}>{agent.status}</span>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 mt-5 pt-5" style={{ borderTop: '1px solid rgba(184,160,112,0.1)' }}>
+          {/* Stats row */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 14, paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
             {[
-              { label: 'Active', count: agents.filter(a => a.status === 'working').length, color: '#10b981' },
-              { label: 'Idle', count: agents.filter(a => a.status === 'idle').length, color: '#f59e0b' },
-              { label: 'Offline', count: agents.filter(a => a.status === 'offline').length, color: '#4b5563' },
+              { label: "Active",  count: agents.filter((a) => a.status === "working").length,  color: "#10b981" },
+              { label: "Idle",    count: agents.filter((a) => a.status === "idle").length,     color: "#f59e0b" },
+              { label: "Offline", count: agents.filter((a) => a.status === "offline").length,  color: "#374151" },
             ].map(({ label, count, color }) => (
-              <div key={label} className="text-center py-2 rounded-lg"
-                   style={{ background: 'rgba(184,160,112,0.03)', border: '1px solid rgba(184,160,112,0.07)' }}>
-                <div className="text-2xl font-bold" style={{ color }}>{count}</div>
-                <div className="text-xs mt-0.5" style={{ color: '#b8a07060' }}>{label}</div>
+              <div key={label} style={{
+                textAlign: "center", padding: "8px 4px", borderRadius: 8,
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.04)",
+              }}>
+                <div style={{ fontSize: 22, fontWeight: 700, color }}>{count}</div>
+                <div style={{ fontSize: 10, color: "#374151", marginTop: 2 }}>{label}</div>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ── Keyframe Styles ── */}
+      {/* Keyframes */}
       <style>{`
-        @keyframes sway {
-          0%, 100% { transform: rotate(-2deg) translateY(0px); }
-          50% { transform: rotate(2deg) translateY(-3px); }
+        @keyframes dot-pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(0.85); }
         }
-        @keyframes windowFlicker {
-          0%, 100% { opacity: 0.6; }
-          50% { opacity: 0.3; }
+        @keyframes linePulse {
+          0%, 100% { opacity: var(--op, 0.5); }
+          50% { opacity: calc(var(--op, 0.5) * 0.5); }
         }
-        @keyframes pulse {
+        @keyframes ring-pulse {
           0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
+          50% { opacity: 0.6; }
+        }
+        @keyframes sway {
+          0%, 100% { transform: rotate(-2deg); }
+          50% { transform: rotate(2deg) translateY(-2px); }
         }
       `}</style>
     </div>
