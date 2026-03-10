@@ -63,6 +63,34 @@ export default function OfficePage() {
       deskItem: "🖥️",
       screenType: "monitoring",
     },
+    {
+      _id: "scout-001",
+      agentId: "scout",
+      name: "SCOUT",
+      role: "Head of Growth & Distribution",
+      avatar: "🦅",
+      status: "working",
+      currentTask: "Daily Twitter intel & draft generation",
+      lastActivity: Date.now(),
+      color: "#8b5cf6",
+      glowColor: "rgba(139, 92, 246, 0.5)",
+      deskItem: "🐦",
+      screenType: "monitoring",
+    },
+    {
+      _id: "forge-001",
+      agentId: "forge",
+      name: "FORGE",
+      role: "Agent Improvement Engine",
+      avatar: "🔨",
+      status: "idle",
+      currentTask: "Sunday 23:00 CET weekly cycle",
+      lastActivity: Date.now(),
+      color: "#f97316",
+      glowColor: "rgba(249, 115, 22, 0.5)",
+      deskItem: "⚙️",
+      screenType: "executive",
+    },
   ];
 
   const [time, setTime] = useState(new Date());
@@ -84,6 +112,8 @@ export default function OfficePage() {
     { id: "mission", x: 13, y: 50,  desk: "Command Center",     z: 1 },
     { id: "insight", x: 72, y: 50,  desk: "Analytics Station",  z: 1 },
     { id: "vibe",    x: 42, y: 76,  desk: "Creative Studio",    z: 0 },
+    { id: "scout",   x: 13, y: 76,  desk: "Scout Station",      z: 0 },
+    { id: "forge",   x: 72, y: 76,  desk: "Forge Lab",          z: 0 },
   ];
 
   // Screen content per agent type
