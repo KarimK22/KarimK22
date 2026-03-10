@@ -6,10 +6,9 @@ import { api } from "../../convex/_generated/api";
 export default function TeamPage() {
   const agents = useQuery(api.agents.getAll, {});
 
-  // Get specific agents
   const apex = agents?.find(a => a.agentId === "main");
+  const forge = agents?.find(a => a.agentId === "forge");
 
-  // Ensure MISSION always shows even if not yet in Convex DB
   const missionInDb = agents?.some(a => a.agentId === "mission");
   const missionFallback = {
     _id: "mission-fallback", agentId: "mission", name: "MISSION",
@@ -18,18 +17,27 @@ export default function TeamPage() {
     lastActivity: Date.now(),
   };
 
-  // Ensure SCOUT always shows
-  const scoutInDb = agents?.some(a => a.agentId === "twitter-scout");
+  const scoutInDb = agents?.some(a => a.agentId === "scout" || a.agentId === "twitter-scout");
   const scoutFallback = {
-    _id: "scout-fallback", agentId: "twitter-scout", name: "SCOUT",
-    role: "Twitter Intelligence & Content", status: "active", avatar: "🐦",
-    skills: ["x-search", "trend-analysis", "tweet-drafting", "retweet-picks", "ct-pulse", "feedback-learning"],
+    _id: "scout-fallback", agentId: "scout", name: "SCOUT",
+    role: "Growth & Distribution", status: "active", avatar: "🦅",
+    skills: ["x-search", "trend-analysis", "tweet-drafting", "competitor-tracking"],
     lastActivity: Date.now(),
     currentTask: "Daily crypto CT scan + draft generation",
   };
 
+  const forgeFallback = {
+    _id: "forge-fallback", agentId: "forge", name: "FORGE",
+    role: "Agent Improvement Engine", status: "idle", avatar: "🔨",
+    skills: ["performance-analysis", "soul-editing", "agent-improvement", "weekly-reporting"],
+    lastActivity: Date.now(),
+    currentTask: "Sunday 23:00 CET weekly cycle",
+  };
+
+  const forgeAgent = forge || forgeFallback;
+
   const teamMembers = [
-    ...(agents?.filter(a => a.agentId !== "main") || []),
+    ...(agents?.filter(a => a.agentId !== "main" && a.agentId !== "forge") || []),
     ...(missionInDb ? [] : [missionFallback]),
     ...(scoutInDb ? [] : [scoutFallback]),
   ];
@@ -51,20 +59,20 @@ export default function TeamPage() {
 
         {/* CEO at Top */}
         {apex && (
-          <div className="flex flex-col items-center mb-12">
-            <AgentCard
-              agent={apex}
-              skills={apex.skills || []}
-              large
-            />
-            
-            {/* Connection Line Down */}
-            <div className="w-0.5 h-16 bg-gradient-to-b from-blue-500/50 to-transparent" />
+          <div className="flex flex-col items-center mb-4">
+            <AgentCard agent={apex} skills={apex.skills || []} large />
+            <div className="w-0.5 h-12 bg-gradient-to-b from-blue-500/50 to-transparent" />
           </div>
         )}
 
-        {/* Divider Line */}
-        <div className="flex items-center justify-center mb-12">
+        {/* FORGE — Direct Report */}
+        <div className="flex flex-col items-center mb-4">
+          <AgentCard agent={forgeAgent} skills={forgeAgent.skills || []} />
+          <div className="w-0.5 h-12 bg-gradient-to-b from-purple-500/50 to-transparent" />
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center justify-center mb-10">
           <div className="flex-1 h-0.5 bg-gradient-to-r from-transparent via-gray-700 to-transparent" />
           <div className="px-4 text-xs text-gray-500 uppercase tracking-wider">Direct Reports</div>
           <div className="flex-1 h-0.5 bg-gradient-to-r from-transparent via-gray-700 to-transparent" />
@@ -75,10 +83,7 @@ export default function TeamPage() {
           {teamMembers.map((agent) => (
             <div key={agent.agentId} className="flex flex-col items-center">
               <div className="w-0.5 h-12 bg-gradient-to-b from-gray-700/50 to-transparent mb-4" />
-              <AgentCard
-                agent={agent}
-                skills={agent.skills || []}
-              />
+              <AgentCard agent={agent} skills={agent.skills || []} />
             </div>
           ))}
         </div>
@@ -119,34 +124,30 @@ function AgentCard({
   large?: boolean;
 }) {
   const skillColors: Record<string, string> = {
-    // APEX skills
     "strategy": "bg-blue-900/40 text-blue-300 border-blue-700/50",
     "decision-making": "bg-indigo-900/40 text-indigo-300 border-indigo-700/50",
     "coordination": "bg-purple-900/40 text-purple-300 border-purple-700/50",
-    
-    // INSIGHT skills
     "mixpanel": "bg-orange-900/40 text-orange-300 border-orange-700/50",
     "data-analysis": "bg-green-900/40 text-green-300 border-green-700/50",
     "reporting": "bg-teal-900/40 text-teal-300 border-teal-700/50",
-    
-    // VIBE skills
     "content-creation": "bg-pink-900/40 text-pink-300 border-pink-700/50",
     "design": "bg-rose-900/40 text-rose-300 border-rose-700/50",
     "social-media": "bg-fuchsia-900/40 text-fuchsia-300 border-fuchsia-700/50",
-    
-    // MISSION skills
     "logging": "bg-cyan-900/40 text-cyan-300 border-cyan-700/50",
     "tracking": "bg-sky-900/40 text-sky-300 border-sky-700/50",
     "documentation": "bg-blue-900/40 text-blue-300 border-blue-700/50",
     "monitoring": "bg-slate-900/40 text-slate-300 border-slate-700/50",
-
-    // SCOUT skills
     "x-search": "bg-sky-900/40 text-sky-300 border-sky-700/50",
     "trend-analysis": "bg-yellow-900/40 text-yellow-300 border-yellow-700/50",
     "tweet-drafting": "bg-blue-900/40 text-blue-200 border-blue-700/50",
     "retweet-picks": "bg-teal-900/40 text-teal-300 border-teal-700/50",
     "ct-pulse": "bg-violet-900/40 text-violet-300 border-violet-700/50",
     "feedback-learning": "bg-emerald-900/40 text-emerald-300 border-emerald-700/50",
+    "competitor-tracking": "bg-red-900/40 text-red-300 border-red-700/50",
+    "performance-analysis": "bg-amber-900/40 text-amber-300 border-amber-700/50",
+    "soul-editing": "bg-purple-900/40 text-purple-300 border-purple-700/50",
+    "agent-improvement": "bg-violet-900/40 text-violet-300 border-violet-700/50",
+    "weekly-reporting": "bg-indigo-900/40 text-indigo-300 border-indigo-700/50",
   };
 
   return (
@@ -157,7 +158,6 @@ function AgentCard({
       transition-all duration-300
       ${large ? 'p-8 w-full max-w-md' : 'p-6 w-full'}
     `}>
-      {/* Avatar & Status */}
       <div className="flex items-start gap-4 mb-4">
         <div className="relative">
           <div className={`
@@ -172,8 +172,6 @@ function AgentCard({
           `}>
             {agent.avatar}
           </div>
-          
-          {/* Status Dot */}
           <div className={`
             absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-gray-900
             ${agent.status === "working" ? 'bg-green-500 animate-pulse' :
@@ -189,8 +187,6 @@ function AgentCard({
           <p className={`text-gray-400 ${large ? 'text-base' : 'text-sm'}`}>
             {agent.role}
           </p>
-          
-          {/* Current Task */}
           {agent.currentTask && (
             <div className="mt-2 px-3 py-1.5 bg-gray-700/30 rounded-lg border border-gray-600/50">
               <p className="text-xs text-gray-300">
@@ -201,7 +197,6 @@ function AgentCard({
         </div>
       </div>
 
-      {/* Skills */}
       {skills.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-700/50">
           {skills.map((skill) => (
